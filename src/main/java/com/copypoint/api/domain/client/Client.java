@@ -24,11 +24,19 @@ public class Client {
     @EmbeddedId
     private ClientId id;
 
+/*    @Column(name = "client_id", insertable = false, updatable = false)
+    private Long clientId;
+
+    @Column(name = "store_id", insertable = false, updatable = false)
+    private Long storeId;*/
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", insertable = false, updatable = false)
+    @MapsId("clientId")
+    @JoinColumn(name = "client_id", insertable = false, updatable = false)
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("storeId")
     @JoinColumn(name = "store_id", referencedColumnName = "id")
     private Store store;
 

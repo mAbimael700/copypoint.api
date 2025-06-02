@@ -27,7 +27,7 @@ public class Contact {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumns({
             @JoinColumn(name = "client_id", referencedColumnName = "client_id"),
-            @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+            @JoinColumn(name = "store_id", referencedColumnName = "store_id")
     })
     private Client clientInfo;
 

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"userRoles", "permissions", "administrators"})
+@ToString(exclude = {"employees", "permissions", "administrators"})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
