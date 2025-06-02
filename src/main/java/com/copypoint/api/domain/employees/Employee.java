@@ -1,6 +1,7 @@
-package com.copypoint.api.domain.role;
+package com.copypoint.api.domain.employees;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
+import com.copypoint.api.domain.role.Role;
 import com.copypoint.api.domain.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,14 +12,17 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "user_roles")
+@Table(name = "employees")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRole {
+public class Employee {
     @EmbeddedId
-    private UserRoleId id;
+    private EmployeeId id;
+
+    @Column(name = "registered_at")
+    private LocalDateTime registeredAt;
 
     @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;

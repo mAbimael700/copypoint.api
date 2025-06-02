@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.role;
+package com.copypoint.api.domain.employees;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -8,14 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.Objects;
 
 @Embeddable
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserRoleId implements Serializable {
+public class EmployeeId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 

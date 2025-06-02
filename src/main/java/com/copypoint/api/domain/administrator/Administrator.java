@@ -1,5 +1,6 @@
-package com.copypoint.api.domain.role;
+package com.copypoint.api.domain.administrator;
 
+import com.copypoint.api.domain.role.Role;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;
 import jakarta.persistence.*;
@@ -9,15 +10,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "store_user_roles")
+@Table(name = "administrator")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StoreUserRole {
+public class Administrator {
 
     @EmbeddedId
-    private UserStoreRoleId id;
+    private AdministratorId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")

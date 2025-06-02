@@ -1,13 +1,12 @@
 package com.copypoint.api.domain.role;
 
+import com.copypoint.api.domain.administrator.Administrator;
+import com.copypoint.api.domain.employees.Employee;
 import com.copypoint.api.domain.permission.Permission;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "roles")
@@ -15,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"userRoles", "permissions", "storeUserRoles"})
+@ToString(exclude = {"userRoles", "permissions", "administrators"})
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,11 +24,11 @@ public class Role {
     private String name;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserRole> userRoles;
+    private List<Employee> employees;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Permission> permissions;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<StoreUserRole> storeUserRoles;
+    private List<Administrator> administrators;
 }

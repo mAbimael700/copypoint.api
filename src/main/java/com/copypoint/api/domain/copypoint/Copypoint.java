@@ -2,7 +2,7 @@ package com.copypoint.api.domain.copypoint;
 
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;
-import com.copypoint.api.domain.role.UserRole;
+import com.copypoint.api.domain.employees.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,5 +42,5 @@ public class Copypoint {
     private String name;
 
     @OneToMany(mappedBy = "copypoint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<UserRole> userRoles;
+    private List<Employee> employees;
 }

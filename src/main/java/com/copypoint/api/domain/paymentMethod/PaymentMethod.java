@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.payment.method;
+package com.copypoint.api.domain.paymentMethod;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

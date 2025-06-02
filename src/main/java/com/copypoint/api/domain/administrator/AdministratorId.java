@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.role;
+package com.copypoint.api.domain.administrator;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -14,7 +14,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserStoreRoleId implements Serializable {
+public class AdministratorId implements Serializable {
     @Column(name = "user_id")
     private Long userId;
 

@@ -32,8 +32,9 @@ public class Attachment {
     @Column(name = "storage_path", length = 500)
     private String storagePath;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "file_type", length = 50)
-    private String fileType;
+    private AttachmentFileType fileType;
 
     private Integer pages;
 

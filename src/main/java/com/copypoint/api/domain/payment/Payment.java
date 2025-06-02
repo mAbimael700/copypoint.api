@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.payment;
 
-import com.copypoint.api.domain.payment.method.PaymentMethod;
+import com.copypoint.api.domain.paymentMethod.PaymentMethod;
 import com.copypoint.api.domain.sales.Sale;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -20,7 +20,7 @@ public class Payment {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "sale_id",referencedColumnName = "id")
+    @JoinColumn(name = "sale_id", referencedColumnName = "id")
     private Sale sale;
 
     @ManyToOne
@@ -35,8 +35,9 @@ public class Payment {
     @Column(length = 3)
     private String currency;
 
+    @Enumerated(EnumType.STRING)
     @Column(length = 30)
-    private String status;
+    private PaymentStatus status;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
