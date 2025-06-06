@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.payment;
 
 import com.copypoint.api.domain.paymentMethod.PaymentMethod;
-import com.copypoint.api.domain.sales.Sale;
+import com.copypoint.api.domain.sale.Sale;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

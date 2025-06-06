@@ -1,9 +1,8 @@
 package com.copypoint.api.domain.profile;
 
 import com.copypoint.api.domain.configuration.Configuration;
-import com.copypoint.api.domain.material.Material;
 import com.copypoint.api.domain.material.ProfileMaterial;
-import com.copypoint.api.domain.sales.SaleProfile;
+import com.copypoint.api.domain.saleProfile.SaleProfile;
 import com.copypoint.api.domain.service.Service;
 import jakarta.persistence.*;
 import lombok.*;

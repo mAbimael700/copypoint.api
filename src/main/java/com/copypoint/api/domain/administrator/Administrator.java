@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "administrators")
 @Data
@@ -35,6 +37,10 @@ public class Administrator {
     @JoinColumn(name = "role_id", insertable = false, updatable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
+    private AdministratorStatus status;
 
-
+    @Column(name = "modified_at")
+    private LocalDateTime modifiedAt;
 }

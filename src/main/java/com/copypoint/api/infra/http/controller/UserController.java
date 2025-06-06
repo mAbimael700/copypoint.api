@@ -1,0 +1,34 @@
+package com.copypoint.api.infra.http.controller;
+
+import com.copypoint.api.domain.user.CreateUserDto;
+import com.copypoint.api.domain.user.UserDTO;
+import com.copypoint.api.domain.user.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@RequestMapping("/users")
+public class UserController {
+
+    @Autowired
+    private UserService userService;
+
+    @GetMapping
+    public ResponseEntity<Page<UserDTO>> getAll(Pageable pageable) {
+        Page<UserDTO> users = userService.getAll(pageable);
+        return ResponseEntity.ok(users);
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDTO> create(@RequestBody CreateUserDto createUserDto) {
+        UserDTO user = userService.create(createUserDto);
+        URI location = URI.create("/users/" + user.id()); // Asumiendo que UserDTO tiene getId()
+        return ResponseEntity.created(location).body(user);
+    }
+}

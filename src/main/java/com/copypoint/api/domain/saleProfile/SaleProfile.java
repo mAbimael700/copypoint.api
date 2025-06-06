@@ -1,7 +1,8 @@
-package com.copypoint.api.domain.sales;
+package com.copypoint.api.domain.saleProfile;
 
 import com.copypoint.api.domain.attachment.Attachment;
 import com.copypoint.api.domain.profile.Profile;
+import com.copypoint.api.domain.sale.Sale;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

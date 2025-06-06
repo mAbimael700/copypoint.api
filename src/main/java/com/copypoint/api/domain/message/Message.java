@@ -19,7 +19,7 @@ import java.util.List;
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
 
     @Column(name = "message_sid")
     private String messageSid;
@@ -36,10 +36,10 @@ public class Message {
 
     @ElementCollection
     @CollectionTable(
-            name = "message_media_urls",
+            name = "message_attachment_urls",
             joinColumns = @JoinColumn(name = "message_id")
     )
-    @Column(name = "media_url", length = 500)
+    @Column(name = "attachment_url", length = 500)
     @Builder.Default
     private List<String> mediaUrls = new ArrayList<>();
 

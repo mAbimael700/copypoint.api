@@ -6,5 +6,8 @@ public enum AttachmentFileType {
     DOCX,
     PNG,
     JPG,
+    PPT,
+    ODT,
+    TXT,
     OTHER
 }

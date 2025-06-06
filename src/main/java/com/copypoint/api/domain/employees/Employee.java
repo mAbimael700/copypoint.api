@@ -27,10 +27,18 @@ public class Employee {
     @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(length = 50)
+    private EmployeeStatus status;
+
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "registered_by",referencedColumnName = "id")
+    private User registeredBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("roleId")
@@ -39,8 +47,6 @@ public class Employee {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("copypointId")
-    @JoinColumn(name = "id", referencedColumnName = "id")
+    @JoinColumn(name = "copypoint_id", referencedColumnName = "id")
     private Copypoint copypoint;
-
 }
-

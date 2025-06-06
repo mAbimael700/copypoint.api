@@ -20,15 +20,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Client {
-
     @EmbeddedId
     private ClientId id;
-
-/*    @Column(name = "client_id", insertable = false, updatable = false)
-    private Long clientId;
-
-    @Column(name = "store_id", insertable = false, updatable = false)
-    private Long storeId;*/
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("clientId")
@@ -41,8 +34,7 @@ public class Client {
     private Store store;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "client_status")
-    private ClientStatus clientStatus; // ACTIVE, INACTIVE, BLOCKED, etc.
+    private ClientStatus status; // ACTIVE, INACTIVE, BLOCKED, etc.
 
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
