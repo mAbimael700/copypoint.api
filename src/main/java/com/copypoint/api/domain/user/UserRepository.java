@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     // Spring Data JPA genera automáticamente esta consulta
     Page<User> findByStatus(UserStatus status, Pageable pageable);
+
+    boolean existsByEmail(String email);
 }

@@ -1,6 +1,7 @@
-package com.copypoint.api.domain.user;
+package com.copypoint.api.domain.user.dto;
 
 import com.copypoint.api.domain.person.PersonDto;
+import com.copypoint.api.domain.user.User;
 
 import java.time.LocalDateTime;
 
