@@ -2,7 +2,7 @@ package com.copypoint.api.domain.copypoint;
 
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;
-import com.copypoint.api.domain.employees.Employee;
+import com.copypoint.api.domain.employee.Employee;
 import jakarta.persistence.*;
 import lombok.*;
 

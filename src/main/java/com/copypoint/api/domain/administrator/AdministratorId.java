@@ -20,7 +20,4 @@ public class AdministratorId implements Serializable {
 
     @Column(name = "store_id")
     private Long storeId;
-
-    @Column(name = "role_id")
-    private Long roleId;
 }

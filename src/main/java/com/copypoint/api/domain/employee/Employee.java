@@ -1,6 +1,7 @@
-package com.copypoint.api.domain.employees;
+package com.copypoint.api.domain.employee;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
+import com.copypoint.api.domain.employeeRole.EmployeeRole;
 import com.copypoint.api.domain.role.Role;
 import com.copypoint.api.domain.user.User;
 import jakarta.persistence.*;
@@ -10,6 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "employees")
@@ -21,6 +24,16 @@ public class Employee {
     @EmbeddedId
     private EmployeeId id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("copypointId")
+    @JoinColumn(name = "copypoint_id", referencedColumnName = "id")
+    private Copypoint copypoint;
+
+    @ManyToOne
+    @MapsId("userId")
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
     @Column(name = "registered_at")
     private LocalDateTime registeredAt;
 
@@ -31,22 +44,11 @@ public class Employee {
     @Column(length = 50)
     private EmployeeStatus status;
 
-    @ManyToOne
-    @MapsId("userId")
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "registered_by",referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "registered_by", referencedColumnName = "id")
     private User registeredBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
-    @JoinColumn(name = "role_id", referencedColumnName = "id")
-    private Role role;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("copypointId")
-    @JoinColumn(name = "copypoint_id", referencedColumnName = "id")
-    private Copypoint copypoint;
+    @Builder.Default
+    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    private List<EmployeeRole> employeeRoles = new ArrayList<>();
 }

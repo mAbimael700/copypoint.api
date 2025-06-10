@@ -4,7 +4,7 @@ import com.copypoint.api.domain.administrator.Administrator;
 import com.copypoint.api.domain.client.Client;
 import com.copypoint.api.domain.copypoint.Copypoint;
 import com.copypoint.api.domain.person.Person;
-import com.copypoint.api.domain.employees.Employee;
+import com.copypoint.api.domain.employee.Employee;
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.store.Store;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.employees;
+package com.copypoint.api.domain.employee;
 
 public enum EmployeeStatus {
     ACTIVE,

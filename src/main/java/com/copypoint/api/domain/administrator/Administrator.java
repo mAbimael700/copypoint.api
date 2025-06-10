@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.administrator;
 
+import com.copypoint.api.domain.administratorRole.AdministratorRole;
 import com.copypoint.api.domain.role.Role;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;
@@ -10,6 +11,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "administrators")
@@ -32,15 +35,14 @@ public class Administrator {
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
-    @JoinColumn(name = "role_id", insertable = false, updatable = false)
-    private Role role;
-
     @Enumerated(EnumType.STRING)
     @Column(length = 50)
     private AdministratorStatus status;
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "administrator", fetch = FetchType.LAZY)
+    private List<AdministratorRole> administratorRoles = new ArrayList<>();
 }
