@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.user;
 
-import com.copypoint.api.domain.administrator.Administrator;
+
 import com.copypoint.api.domain.client.Client;
 import com.copypoint.api.domain.copypoint.Copypoint;
 import com.copypoint.api.domain.person.Person;
@@ -52,9 +52,6 @@ public class User {
     @OneToMany(mappedBy = "createdBy", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Copypoint> createdCopypoints;
 
-    // Relación en qué sucursales copypoint es empleado este usuario
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Employee> employees;
 
     // Relación con las ventas realizadas por este usuario
     @OneToMany(mappedBy = "userVendor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -66,8 +63,8 @@ public class User {
     @Builder.Default
     private List<Client> clientRelationships = new ArrayList<>();
 
-    // Relación en qué tiendas es administrador este usuario
+    // Relación en qué tiendas o copypoints es empleado este usuario
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
-    private List<Administrator> administrators = new ArrayList<>();
+    private List<Employee> employeeRelationship = new ArrayList<>();
 }

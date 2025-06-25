@@ -38,4 +38,6 @@ public class Service {
      )
     @Builder.Default
     private List<Profile> profiles = new ArrayList<>();
+
+    private Boolean active;
 }

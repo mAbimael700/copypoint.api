@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.conversation;
 
 import com.copypoint.api.domain.contact.Contact;
-import com.copypoint.api.domain.customerServicePhone.CustomerServicePhone;
+import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

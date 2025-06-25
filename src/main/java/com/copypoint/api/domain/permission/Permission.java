@@ -3,16 +3,14 @@ package com.copypoint.api.domain.permission;
 import com.copypoint.api.domain.modules.Module;
 import com.copypoint.api.domain.role.Role;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name="permissions")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Builder
 public class Permission {
     @EmbeddedId

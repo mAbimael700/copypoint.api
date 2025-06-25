@@ -1,7 +1,6 @@
 package com.copypoint.api.domain.material;
 
-import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.profile.Profile;
+import com.copypoint.api.domain.profilematerial.ProfileMaterial;
 import com.copypoint.api.domain.store.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

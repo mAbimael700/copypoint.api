@@ -1,7 +1,8 @@
 package com.copypoint.api.domain.user;
+
 import com.copypoint.api.domain.person.Person;
 import com.copypoint.api.domain.person.PersonRepository;
-import com.copypoint.api.domain.user.dto.CreateUserDto;
+import com.copypoint.api.domain.user.dto.UserCreationDTO;
 import com.copypoint.api.domain.user.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -33,18 +35,18 @@ public class UserService {
                 .map(UserDTO::new);
     }
 
-    public UserDTO create(CreateUserDto createUserDto) {
+    public UserDTO create(UserCreationDTO userCreationDTO) {
         Person newPerson = Person
                 .builder()
-                .firstName(createUserDto.personInfo().firstName())
-                .lastName(createUserDto.personInfo().lastName())
-                .phoneNumber(createUserDto.personInfo().phoneNumber())
+                .firstName(userCreationDTO.personInfo().firstName())
+                .lastName(userCreationDTO.personInfo().lastName())
+                .phoneNumber(userCreationDTO.personInfo().phoneNumber())
                 .build();
 
-        User newUser =  User
+        User newUser = User
                 .builder()
-                .email(createUserDto.email())
-                .password(passwordEncoder.encode(createUserDto.password()))
+                .email(userCreationDTO.email())
+                .password(passwordEncoder.encode(userCreationDTO.password()))
                 .personalInformation(newPerson)
                 .status(UserStatus.ACTIVE)
                 .creationDate(LocalDateTime.now())
@@ -53,5 +55,9 @@ public class UserService {
         personRepository.save(newPerson);
         var saved = userRepository.save(newUser);
         return new UserDTO(saved);
+    }
+
+    public Optional<User> getById(Long userId) {
+        return userRepository.findById(userId);
     }
 }

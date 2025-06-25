@@ -15,7 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = {"userRoles"})
 public class Copypoint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,8 +38,6 @@ public class Copypoint {
     @JoinColumn(name = "responsible_id")
     private User responsible;
 
+    @Column(unique = true)
     private String name;
-
-    @OneToMany(mappedBy = "copypoint", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Employee> employees;
 }

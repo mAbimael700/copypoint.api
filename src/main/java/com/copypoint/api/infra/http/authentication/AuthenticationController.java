@@ -2,7 +2,7 @@ package com.copypoint.api.infra.http.authentication;
 
 import com.copypoint.api.infra.http.token.JWTTokenDto;
 import com.copypoint.api.infra.http.token.TokenService;
-import com.copypoint.api.infra.http.userPrincipal.UserPrincipal;
+import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/auth")
 public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;

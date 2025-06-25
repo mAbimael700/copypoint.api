@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.controller;
 
-import com.copypoint.api.domain.user.dto.CreateUserDto;
+import com.copypoint.api.domain.user.dto.UserCreationDTO;
 import com.copypoint.api.domain.user.dto.UserDTO;
 import com.copypoint.api.domain.user.UserService;
 import jakarta.validation.Valid;
@@ -26,8 +26,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> create(@RequestBody @Valid CreateUserDto createUserDto) {
-        UserDTO user = userService.create(createUserDto);
+    public ResponseEntity<UserDTO> create(@RequestBody @Valid UserCreationDTO userCreationDTO) {
+        UserDTO user = userService.create(userCreationDTO);
         URI location = URI.create("/users/" + user.id()); // Asumiendo que UserDTO tiene getId()
         return ResponseEntity.created(location).body(user);
     }

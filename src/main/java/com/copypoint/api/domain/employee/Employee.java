@@ -1,18 +1,15 @@
 package com.copypoint.api.domain.employee;
 
-import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.employeeRole.EmployeeRole;
-import com.copypoint.api.domain.role.Role;
+import com.copypoint.api.domain.employeerole.EmployeeRole;
 import com.copypoint.api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "employees")
@@ -21,16 +18,12 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Employee {
-    @EmbeddedId
-    private EmployeeId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("copypointId")
-    @JoinColumn(name = "copypoint_id", referencedColumnName = "id")
-    private Copypoint copypoint;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne
-    @MapsId("userId")
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -49,6 +42,6 @@ public class Employee {
     private User registeredBy;
 
     @Builder.Default
-    @OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<EmployeeRole> employeeRoles = new ArrayList<>();
 }
