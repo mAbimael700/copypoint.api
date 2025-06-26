@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.saleprofile;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class SaleProfilesId implements Serializable {
-    private Long serviceId;
+public class SaleProfileId implements Serializable {
+    @Column(name = "sale_id")
+    private Long saleId;
+    @Column(name = "profile_id")
     private Long profileId;
 }

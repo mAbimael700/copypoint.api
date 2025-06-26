@@ -1,7 +1,7 @@
 package com.copypoint.api.infra.http.authentication;
 
 import com.copypoint.api.domain.permission.PermissionService;
-import com.copypoint.api.domain.user.UserRepository;
+import com.copypoint.api.domain.user.repository.UserRepository;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,11 +1,10 @@
 package com.copypoint.api.domain.store;
 
 import com.copypoint.api.domain.employee.EmployeeService;
-import com.copypoint.api.domain.employee.dto.EmployeeCreationDTO;
 import com.copypoint.api.domain.role.RoleType;
 import com.copypoint.api.domain.store.dto.StoreCreationDTO;
 import com.copypoint.api.domain.store.dto.StoreDTO;
-import com.copypoint.api.domain.user.UserService;
+import com.copypoint.api.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -35,7 +35,15 @@ public class Profile {
     @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
 
-    @ManyToMany(mappedBy = "profiles", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "service_profiles",
+            joinColumns = @JoinColumn(name = "profile_id"),
+            inverseJoinColumns = @JoinColumn(name = "service_id")
+    )
     @Builder.Default
     private List<Service> services = new ArrayList<>();
 

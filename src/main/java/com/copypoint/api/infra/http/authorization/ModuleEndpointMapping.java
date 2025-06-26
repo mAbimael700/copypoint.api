@@ -25,13 +25,20 @@ public class ModuleEndpointMapping {
 
         endpoints.put(ModuleType.COPYPOINT_MANAGEMENT, Arrays.asList(
                         "POST:/api/stores/*/copypoints",
-                        "GET:/api/stores/*/copypoints"
+                        "GET:/api/stores/*/copypoints",
+                        "GET:/api/copypoints/*/sales",
+                        "GET:/api/copypoints/*/sales/pending",
+                        "POST:/api/copypoints/*/sales/*/profiles",
+                        "PATCH:/api/copypoints/*/sales/*/status",
+                        "PATCH:/api/copypoints/*/sales/*/hold"
                 )
         );
 
         endpoints.put(ModuleType.STORE_MANAGEMENT, Arrays.asList(
                 "POST:/api/stores/*/services",
-                "GET:/api/stores/*/services"
+                "GET:/api/stores/*/services",
+                "POST:/api/stores/*/profiles",
+                "GET:/api/stores/*/profiles"
         ));
 
 

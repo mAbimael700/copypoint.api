@@ -1,5 +1,6 @@
-package com.copypoint.api.domain.service;
+package com.copypoint.api.domain.service.repository;
 
+import com.copypoint.api.domain.service.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

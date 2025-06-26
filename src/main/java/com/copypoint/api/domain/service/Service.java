@@ -30,12 +30,7 @@ public class Service {
     @JoinColumn(name = "store_id", referencedColumnName = "id")
     private Store store;
 
-    @ManyToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-     @JoinTable(
-             name = "service_profiles",
-             joinColumns = @JoinColumn(name = "service_id"),
-             inverseJoinColumns = @JoinColumn(name = "profile_id")
-     )
+    @ManyToMany(mappedBy = "services", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Profile> profiles = new ArrayList<>();
 

@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.user.validation;
 
-import com.copypoint.api.domain.user.UserRepository;
+import com.copypoint.api.domain.user.repository.UserRepository;
 import com.copypoint.api.domain.user.validation.annotation.UniqueEmail;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

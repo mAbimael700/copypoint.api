@@ -2,7 +2,7 @@ package com.copypoint.api.infra.http.userprofile;
 
 import com.copypoint.api.domain.person.Person;
 import com.copypoint.api.domain.user.User;
-import com.copypoint.api.domain.user.UserRepository;
+import com.copypoint.api.domain.user.repository.UserRepository;
 import com.copypoint.api.infra.http.token.TokenService;
 import com.copypoint.api.infra.http.userprofile.dto.UserProfileResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;

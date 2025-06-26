@@ -2,18 +2,14 @@ package com.copypoint.api.domain.copypoint;
 
 import com.copypoint.api.domain.copypoint.dto.CopypointCreationDTO;
 import com.copypoint.api.domain.copypoint.dto.CopypointDTO;
-import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.store.StoreRepository;
-import com.copypoint.api.domain.store.StoreService;
-import com.copypoint.api.domain.user.User;
-import com.copypoint.api.domain.user.UserRepository;
+import com.copypoint.api.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 public class CopypointService {

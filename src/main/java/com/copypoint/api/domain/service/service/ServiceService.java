@@ -1,7 +1,8 @@
-package com.copypoint.api.domain.service;
+package com.copypoint.api.domain.service.service;
 
 import com.copypoint.api.domain.service.dto.ServiceCreationDTO;
 import com.copypoint.api.domain.service.dto.ServiceDTO;
+import com.copypoint.api.domain.service.repository.ServiceRepository;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.store.StoreRepository;
 import jakarta.validation.Valid;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service

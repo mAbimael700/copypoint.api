@@ -3,6 +3,7 @@ package com.copypoint.api.domain.saleprofile;
 import com.copypoint.api.domain.attachment.Attachment;
 import com.copypoint.api.domain.profile.Profile;
 import com.copypoint.api.domain.sale.Sale;
+import com.copypoint.api.domain.service.Service;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SaleProfile {
     @EmbeddedId
-    private SaleProfilesId id;
+    private SaleProfileId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("saleId")
@@ -30,7 +31,7 @@ public class SaleProfile {
     private Profile profile;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "file_id", referencedColumnName = "id")
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
     private Attachment attachment;
 
     @Column(name = "unit_price")
@@ -39,4 +40,5 @@ public class SaleProfile {
     private Integer quantity;
 
     private Double subtotal;
+
 }

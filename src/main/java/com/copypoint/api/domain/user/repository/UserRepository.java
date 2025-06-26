@@ -1,6 +1,7 @@
-package com.copypoint.api.domain.user;
+package com.copypoint.api.domain.user.repository;
 
-import aj.org.objectweb.asm.commons.Remapper;
+import com.copypoint.api.domain.user.User;
+import com.copypoint.api.domain.user.UserStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

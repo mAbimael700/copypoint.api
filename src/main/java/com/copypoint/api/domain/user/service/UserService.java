@@ -1,9 +1,12 @@
-package com.copypoint.api.domain.user;
+package com.copypoint.api.domain.user.service;
 
 import com.copypoint.api.domain.person.Person;
 import com.copypoint.api.domain.person.PersonRepository;
+import com.copypoint.api.domain.user.User;
+import com.copypoint.api.domain.user.UserStatus;
 import com.copypoint.api.domain.user.dto.UserCreationDTO;
 import com.copypoint.api.domain.user.dto.UserDTO;
+import com.copypoint.api.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

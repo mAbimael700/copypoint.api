@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.controller;
 
-import com.copypoint.api.domain.service.ServiceService;
+import com.copypoint.api.domain.service.service.ServiceService;
 import com.copypoint.api.domain.service.dto.ServiceCreationDTO;
 import com.copypoint.api.domain.service.dto.ServiceDTO;
 import jakarta.validation.Valid;

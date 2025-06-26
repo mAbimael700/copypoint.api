@@ -2,7 +2,7 @@ package com.copypoint.api.infra.http.controller;
 
 import com.copypoint.api.domain.user.dto.UserCreationDTO;
 import com.copypoint.api.domain.user.dto.UserDTO;
-import com.copypoint.api.domain.user.UserService;
+import com.copypoint.api.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
