@@ -37,4 +37,10 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByStatus(SaleStatus status);
 
     Page<Sale> findByCopypoint_IdAndStatus(Long copypointId, SaleStatus saleStatus, Pageable pageable);
+
+
+    Page<Sale> findByUserVendorIdAndCopypoint_IdAndStatus(Long userId, Long copypointId, SaleStatus saleStatus, Pageable pageable);
+
+
+    Page<Sale> findByUserVendorIdAndCopypoint_Id(Long userId, Long copypointId, Pageable pageable);
 }

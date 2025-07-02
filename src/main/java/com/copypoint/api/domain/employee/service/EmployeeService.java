@@ -1,7 +1,9 @@
-package com.copypoint.api.domain.employee;
+package com.copypoint.api.domain.employee.service;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.employee.dto.EmployeeCreationDTO;
+import com.copypoint.api.domain.employee.Employee;
+import com.copypoint.api.domain.employee.repository.EmployeeRepository;
+import com.copypoint.api.domain.employee.EmployeeStatus;
 import com.copypoint.api.domain.employee.dto.EmployeeDTO;
 import com.copypoint.api.domain.employeerole.EmployeeRole;
 import com.copypoint.api.domain.employeerole.EmployeeRoleRepository;
@@ -16,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Service

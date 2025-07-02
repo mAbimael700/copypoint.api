@@ -1,7 +1,11 @@
-package com.copypoint.api.domain.copypoint;
+package com.copypoint.api.domain.copypoint.service;
 
+import com.copypoint.api.domain.copypoint.Copypoint;
+import com.copypoint.api.domain.copypoint.CopypointRepository;
 import com.copypoint.api.domain.copypoint.dto.CopypointCreationDTO;
 import com.copypoint.api.domain.copypoint.dto.CopypointDTO;
+import com.copypoint.api.domain.employee.service.EmployeeService;
+import com.copypoint.api.domain.role.RoleType;
 import com.copypoint.api.domain.store.StoreRepository;
 import com.copypoint.api.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,9 @@ public class CopypointService {
     @Autowired
     private StoreRepository storeRepository;
 
+    @Autowired
+    private EmployeeService employeeService;
+
     public CopypointDTO create(CopypointCreationDTO creationDto, Long creatorId, Long storeId) {
 
         var store = storeRepository.findById(storeId);
@@ -40,8 +47,16 @@ public class CopypointService {
                 .lastModifiedAt(LocalDateTime.now())
                 .build();
 
-        var createdCopypoint = copypointRepository.save(newCopypoint);
-        return new CopypointDTO(createdCopypoint);
+        Copypoint savedCopypoint = copypointRepository.save(newCopypoint);
+
+        try {
+            employeeService.saveEmployee(userCreator.get(), null, savedCopypoint, RoleType.COPYPOINT_MANAGER);
+        } catch (Exception e) {
+            // Si falla la creación del empleado, podríamos considerar hacer rollback
+            throw new RuntimeException("Error al crear el empleado propietario: " + e.getMessage(), e);
+        }
+
+        return new CopypointDTO(savedCopypoint);
     }
 
     public Page<CopypointDTO> getlAllByStoreId(Pageable pageable, Long storeId) {

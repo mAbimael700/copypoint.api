@@ -9,8 +9,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ProfileService {
@@ -58,25 +61,92 @@ public class ProfileService {
         return profilesPage.map(ProfileDTO::new);
     }
 
+
     public Optional<ProfileDTO> updateProfile(Long id, ProfileCreationDTO updateDto) {
         return profileRepository.findById(id)
                 .map(existingProfile -> {
-                    // Obtener servicios actualizados
-                    List<com.copypoint.api.domain.service.Service> updatedServices =
-                            updateDto.services().stream()
-                                    .map(serviceId -> serviceRepository.findById(serviceId))
-                                    .filter(Optional::isPresent)
-                                    .map(Optional::get)
-                                    .toList();
+                    // Actualizar campos básicos
+                    if (updateDto.name() != null) {
+                        existingProfile.setName(updateDto.name());
+                    }
 
-                    // Actualizar campos
-                    existingProfile.setName(updateDto.name());
-                    existingProfile.setDescription(updateDto.description());
-                    existingProfile.setServices(updatedServices);
+                    if (updateDto.description() != null) {
+                        existingProfile.setDescription(updateDto.description());
+                    }
 
+                    if (updateDto.unitPrice() != null) {
+                        existingProfile.setUnitPrice(updateDto.unitPrice());
+                    }
+
+                    // Sincronizar servicios solo si se proporcionan en el DTO
+                    if (updateDto.services() != null) {
+                        syncProfileServices(existingProfile, updateDto.services());
+                    }
+
+                    existingProfile.setLastModifiedAt(LocalDateTime.now());
                     Profile savedProfile = profileRepository.save(existingProfile);
                     return new ProfileDTO(savedProfile);
                 });
+    }
+
+
+    /**
+     * Sincroniza los servicios del perfil con los IDs proporcionados.
+     * Solo agrega servicios nuevos y elimina los que ya no están en la lista.
+     *
+     * @param profile el perfil a actualizar
+     * @param serviceIds lista de IDs de servicios deseados
+     */
+    private void syncProfileServices(Profile profile, List<Long> serviceIds) {
+        // Obtener servicios actuales del perfil
+        List<com.copypoint.api.domain.service.Service> currentServices = profile.getServices();
+        Set<Long> currentServiceIds = currentServices.stream()
+                .map(com.copypoint.api.domain.service.Service::getId)
+                .collect(Collectors.toSet());
+
+        // Convertir la lista de IDs a Set para operaciones más eficientes
+        Set<Long> newServiceIds = new HashSet<>(serviceIds);
+
+        // Encontrar servicios a eliminar (están en current pero no en new)
+        List<com.copypoint.api.domain.service.Service> servicesToRemove = currentServices.stream()
+                .filter(service -> !newServiceIds.contains(service.getId()))
+                .toList();
+
+        // Encontrar IDs de servicios a agregar (están en new pero no en current)
+        Set<Long> serviceIdsToAdd = newServiceIds.stream()
+                .filter(serviceId -> !currentServiceIds.contains(serviceId))
+                .collect(Collectors.toSet());
+
+        // Remover servicios que ya no están en la lista
+        for (com.copypoint.api.domain.service.Service serviceToRemove : servicesToRemove) {
+            profile.getServices().remove(serviceToRemove);
+            serviceToRemove.getProfiles().remove(profile);
+        }
+
+        // Agregar nuevos servicios
+        if (!serviceIdsToAdd.isEmpty()) {
+            List<com.copypoint.api.domain.service.Service> servicesToAdd = serviceRepository
+                    .findAllById(serviceIdsToAdd);
+
+            // Validar que todos los servicios existen
+            if (servicesToAdd.size() != serviceIdsToAdd.size()) {
+                Set<Long> foundServiceIds = servicesToAdd.stream()
+                        .map(com.copypoint.api.domain.service.Service::getId)
+                        .collect(Collectors.toSet());
+
+                Set<Long> missingServiceIds = serviceIdsToAdd.stream()
+                        .filter(id -> !foundServiceIds.contains(id))
+                        .collect(Collectors.toSet());
+
+                throw new IllegalArgumentException("Los siguientes servicios no existen: " + missingServiceIds);
+            }
+
+            // Agregar nuevos servicios y actualizar relación bidireccional
+            for (com.copypoint.api.domain.service.Service serviceToAdd : servicesToAdd) {
+                profile.getServices().add(serviceToAdd);
+                serviceToAdd.getProfiles().add(profile);
+            }
+        }
     }
 
     public boolean deactivateProfile(Long id) {

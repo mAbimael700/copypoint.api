@@ -1,5 +1,6 @@
-package com.copypoint.api.domain.person;
+package com.copypoint.api.domain.person.service;
 
+import com.copypoint.api.domain.person.Person;
 import org.springframework.stereotype.Service;
 
 @Service

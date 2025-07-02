@@ -30,7 +30,8 @@ public class ModuleEndpointMapping {
                         "GET:/api/copypoints/*/sales/pending",
                         "POST:/api/copypoints/*/sales/*/profiles",
                         "PATCH:/api/copypoints/*/sales/*/status",
-                        "PATCH:/api/copypoints/*/sales/*/hold"
+                        "PATCH:/api/copypoints/*/sales/*/hold",
+                        "GET:/api/copypoints/*/services"
                 )
         );
 

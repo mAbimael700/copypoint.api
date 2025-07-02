@@ -7,7 +7,8 @@ public enum RoleType {
 
     // Roles para Administrator
     STORE_MANAGER("STORE_MANAGER", "Administrador Gerente"),
-    STORE_OWNER("STORE_OWNER", "Administrador Propietario");
+    STORE_OWNER("STORE_OWNER", "Administrador Propietario"),
+    COPYPOINT_MANAGER("COPYPOINT_MANAGER","Administrador copypoint" );
 
     private final String code;
     private final String description;

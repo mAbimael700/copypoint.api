@@ -14,14 +14,14 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/stores/{storeId}/services")
+@RequestMapping("/api")
 public class ServiceController {
 
     @Autowired
     private ServiceService serviceService;
 
     @PreAuthorize("hasAuthority('MODULE_STORE_MANAGEMENT')")
-    @GetMapping
+    @GetMapping("/stores/{storeId}/services")
     public ResponseEntity<Page<ServiceDTO>> getServices(
             Pageable pageable,
             @PathVariable Long storeId) {
@@ -31,7 +31,7 @@ public class ServiceController {
 
 
     @PreAuthorize("hasAuthority('MODULE_STORE_MANAGEMENT')")
-    @PostMapping
+    @PostMapping("/stores/{storeId}/services")
     public ResponseEntity<ServiceDTO> createService(
             @PathVariable Long storeId,
             @Valid @RequestBody ServiceCreationDTO creationDTO
@@ -39,5 +39,15 @@ public class ServiceController {
         var savedService = serviceService.create(creationDTO, storeId);
         URI location = URI.create("/api/stores/" + storeId + "/services/" + savedService.id());
         return ResponseEntity.created(location).body(savedService);
+    }
+
+
+    @PreAuthorize("hasAuthority('MODULE_COPYPOINT_MANAGEMENT')")
+    @GetMapping("/copypoints/{copypointId}/services")
+    public ResponseEntity<Page<ServiceDTO>> getServicesByCopypointId(
+            Pageable pageable,
+            @PathVariable Long copypointId) {
+        var services = serviceService.getAllByCopypointId(pageable, copypointId);
+        return ResponseEntity.ok(services);
     }
 }

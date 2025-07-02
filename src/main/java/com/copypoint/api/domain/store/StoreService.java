@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.store;
 
-import com.copypoint.api.domain.employee.EmployeeService;
+import com.copypoint.api.domain.employee.service.EmployeeService;
 import com.copypoint.api.domain.role.RoleType;
 import com.copypoint.api.domain.store.dto.StoreCreationDTO;
 import com.copypoint.api.domain.store.dto.StoreDTO;

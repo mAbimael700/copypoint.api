@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.user.service;
 
 import com.copypoint.api.domain.person.Person;
-import com.copypoint.api.domain.person.PersonRepository;
+import com.copypoint.api.domain.person.repository.PersonRepository;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.domain.user.UserStatus;
 import com.copypoint.api.domain.user.dto.UserCreationDTO;
@@ -41,13 +41,14 @@ public class UserService {
     public UserDTO create(UserCreationDTO userCreationDTO) {
         Person newPerson = Person
                 .builder()
-                .firstName(userCreationDTO.personInfo().firstName())
-                .lastName(userCreationDTO.personInfo().lastName())
-                .phoneNumber(userCreationDTO.personInfo().phoneNumber())
+                .firstName(userCreationDTO.personalInfo().firstName())
+                .lastName(userCreationDTO.personalInfo().lastName())
+                .phoneNumber(userCreationDTO.personalInfo().phoneNumber())
                 .build();
 
         User newUser = User
                 .builder()
+                .username(userCreationDTO.username())
                 .email(userCreationDTO.email())
                 .password(passwordEncoder.encode(userCreationDTO.password()))
                 .personalInformation(newPerson)

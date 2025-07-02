@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.http.authentication;
+package com.copypoint.api.infra.http.authentication.service;
 
 import com.copypoint.api.domain.permission.PermissionService;
 import com.copypoint.api.domain.user.repository.UserRepository;

@@ -1,6 +1,7 @@
-package com.copypoint.api.domain.employee;
+package com.copypoint.api.domain.employee.repository;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
+import com.copypoint.api.domain.employee.Employee;
 import com.copypoint.api.domain.employeerole.EmployeeRolePermissionProjection;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;

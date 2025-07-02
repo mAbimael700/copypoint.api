@@ -37,6 +37,9 @@ public class Store {
     @JoinColumn(name = "owner_id")
     private User owner;
 
+    @Column(length = 3)
+    private String currency;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Copypoint> copypoints;
 

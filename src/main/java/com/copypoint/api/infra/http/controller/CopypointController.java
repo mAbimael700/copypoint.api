@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.controller;
 
-import com.copypoint.api.domain.copypoint.CopypointService;
+import com.copypoint.api.domain.copypoint.service.CopypointService;
 import com.copypoint.api.domain.copypoint.dto.CopypointCreationDTO;
 import com.copypoint.api.domain.copypoint.dto.CopypointDTO;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;

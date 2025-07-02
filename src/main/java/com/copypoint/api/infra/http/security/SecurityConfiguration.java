@@ -1,8 +1,8 @@
 package com.copypoint.api.infra.http.security;
 
-import com.copypoint.api.infra.http.authentication.AuthenticationFilter;
-import com.copypoint.api.infra.http.authentication.AuthenticationService;
-import com.copypoint.api.infra.http.authorization.AuthorizationFilter;
+import com.copypoint.api.infra.http.authentication.filter.AuthenticationFilter;
+import com.copypoint.api.infra.http.authentication.service.AuthenticationService;
+import com.copypoint.api.infra.http.authorization.filter.AuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,9 +46,10 @@ public class SecurityConfiguration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Le indiamos a Spring el tipo de sesion
                 .authorizeHttpRequests((auth) ->
                         auth
-                                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/auth/my-profile").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/sign-in").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
+                                //.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()
                 )

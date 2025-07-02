@@ -1,8 +1,6 @@
 package com.copypoint.api.infra.http.controller;
 
-import com.copypoint.api.domain.copypoint.CopypointService;
-import com.copypoint.api.domain.copypoint.dto.CopypointCreationDTO;
-import com.copypoint.api.domain.copypoint.dto.CopypointDTO;
+import com.copypoint.api.domain.copypoint.service.CopypointService;
 import com.copypoint.api.domain.store.dto.StoreCreationDTO;
 import com.copypoint.api.domain.store.dto.StoreDTO;
 import com.copypoint.api.domain.store.StoreService;

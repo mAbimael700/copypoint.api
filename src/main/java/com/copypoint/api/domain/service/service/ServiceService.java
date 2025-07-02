@@ -46,4 +46,9 @@ public class ServiceService {
         return serviceRepository.findByStoreId(storeId, pageable)
                 .map(ServiceDTO::new);
     }
+
+    public Page<ServiceDTO> getAllByCopypointId(Pageable pageable, Long copypointId) {
+        return serviceRepository.findActiveByCopypointId(copypointId, pageable)
+                .map(ServiceDTO::new);
+    }
 }
