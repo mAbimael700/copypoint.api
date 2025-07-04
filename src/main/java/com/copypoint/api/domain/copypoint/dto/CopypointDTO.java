@@ -11,6 +11,7 @@ public record CopypointDTO(
         String name,
         UserDTO responsible,
         UserDTO createdBy,
+        String status,
         LocalDateTime creationDate,
         LocalDateTime lastModified
 ) {
@@ -20,6 +21,7 @@ public record CopypointDTO(
                 copypoint.getName(),
                 new UserDTO(copypoint.getResponsible()),
                 new UserDTO(copypoint.getCreatedBy()),
+                copypoint.getStatus().toString(),
                 copypoint.getCreatedAt(),
                 copypoint.getLastModifiedAt()
         );

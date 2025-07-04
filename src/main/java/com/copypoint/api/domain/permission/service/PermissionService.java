@@ -1,9 +1,9 @@
-package com.copypoint.api.domain.permission;
+package com.copypoint.api.domain.permission.service;
 
 import com.copypoint.api.domain.employee.Employee;
 import com.copypoint.api.domain.employee.repository.EmployeeRepository;
 import com.copypoint.api.domain.employeerole.EmployeeRolePermissionProjection;
-import com.copypoint.api.domain.modules.ModuleType;
+import com.copypoint.api.domain.module.ModuleType;
 import com.copypoint.api.domain.pathcontext.PathContext;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.infra.http.authorization.ModuleEndpointMapping;

@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.authorization.filter;
 
-import com.copypoint.api.domain.permission.PermissionService;
+import com.copypoint.api.domain.permission.service.PermissionService;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

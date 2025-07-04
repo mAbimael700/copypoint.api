@@ -1,15 +1,17 @@
 package com.copypoint.api.infra.http.controller;
 
 import com.copypoint.api.domain.employee.repository.EmployeeRepository;
-import com.copypoint.api.domain.permission.PermissionService;
+import com.copypoint.api.domain.permission.service.PermissionService;
 import com.copypoint.api.domain.sale.SaleStatus;
 import com.copypoint.api.domain.sale.dto.SaleCreationDTO;
 import com.copypoint.api.domain.sale.dto.SaleDTO;
 import com.copypoint.api.domain.sale.service.SaleService;
 import com.copypoint.api.domain.saleprofile.dto.SaleProfileCreationDTO;
+import com.copypoint.api.domain.saleprofile.dto.SaleProfileDTO;
 import com.copypoint.api.domain.saleprofile.service.SaleProfileService;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +51,7 @@ public class SalesController {
             SaleDTO createdSale = saleService.createSale(userId, copypointId, saleCreationDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(createdSale);
         } catch (RuntimeException e) {
+            System.out.println(e);
             return ResponseEntity.badRequest().build();
         }
     }
@@ -59,10 +62,23 @@ public class SalesController {
     @PostMapping("/{saleId}/profiles")
     public ResponseEntity<SaleDTO> addProfileToSale(
             @PathVariable Long saleId,
-            @RequestBody SaleProfileCreationDTO saleProfileDTO) {
+            @Valid @RequestBody SaleProfileCreationDTO saleProfileDTO) {
 
-        try {
             SaleDTO updatedSale = saleProfileService.addProfileToSale(saleId, saleProfileDTO);
+            return ResponseEntity.ok(updatedSale);
+
+    }
+
+    /**
+     * Agregar un profile a una venta PENDING
+     */
+    @GetMapping("/{saleId}/profiles")
+    public ResponseEntity<Page<SaleProfileDTO>> getProfilesBySale(
+            @PathVariable Long saleId,
+            Pageable pageable
+    ) {
+        try {
+            Page<SaleProfileDTO> updatedSale = saleProfileService.getBySaleId(saleId, pageable);
             return ResponseEntity.ok(updatedSale);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
@@ -146,7 +162,7 @@ public class SalesController {
     /**
      * Endpoint adicional: Finalizar venta (cambiar de PENDING a ON_HOLD)
      */
-    @PatchMapping("/{saleId}/hold")
+    @PatchMapping("/{serviceId}/hold")
     public ResponseEntity<SaleDTO> holdSale(@PathVariable Long saleId) {
         try {
             SaleDTO updatedSale = saleService.updateSaleStatus(saleId, SaleStatus.ON_HOLD);

@@ -3,7 +3,7 @@ package com.copypoint.api.infra.http.controller;
 import com.copypoint.api.domain.copypoint.service.CopypointService;
 import com.copypoint.api.domain.store.dto.StoreCreationDTO;
 import com.copypoint.api.domain.store.dto.StoreDTO;
-import com.copypoint.api.domain.store.StoreService;
+import com.copypoint.api.domain.store.service.StoreService;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

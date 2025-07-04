@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.authentication.filter;
 
-import com.copypoint.api.domain.permission.PermissionService;
+import com.copypoint.api.domain.permission.service.PermissionService;
 import com.copypoint.api.domain.user.repository.UserRepository;
 import com.copypoint.api.infra.http.token.TokenService;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;

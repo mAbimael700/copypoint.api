@@ -1,17 +1,19 @@
 package com.copypoint.api.domain.copypoint.service;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.copypoint.CopypointRepository;
+import com.copypoint.api.domain.copypoint.repository.CopypointRepository;
+import com.copypoint.api.domain.copypoint.CopypointStatus;
 import com.copypoint.api.domain.copypoint.dto.CopypointCreationDTO;
 import com.copypoint.api.domain.copypoint.dto.CopypointDTO;
 import com.copypoint.api.domain.employee.service.EmployeeService;
 import com.copypoint.api.domain.role.RoleType;
-import com.copypoint.api.domain.store.StoreRepository;
+import com.copypoint.api.domain.store.repository.StoreRepository;
 import com.copypoint.api.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -29,6 +31,7 @@ public class CopypointService {
     @Autowired
     private EmployeeService employeeService;
 
+    @Transactional
     public CopypointDTO create(CopypointCreationDTO creationDto, Long creatorId, Long storeId) {
 
         var store = storeRepository.findById(storeId);
@@ -44,6 +47,7 @@ public class CopypointService {
                 .createdBy(userCreator.get())
                 .responsible(userCreator.get())
                 .createdAt(LocalDateTime.now())
+                .status(CopypointStatus.ACTIVE)
                 .lastModifiedAt(LocalDateTime.now())
                 .build();
 

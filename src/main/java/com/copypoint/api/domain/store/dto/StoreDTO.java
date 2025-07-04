@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 public record StoreDTO(
         Long id,
         String name,
+        String currency,
         UserDTO owner,
         LocalDateTime createdAt
 ) {
@@ -15,6 +16,7 @@ public record StoreDTO(
         this(
                 savedStore.getId(),
                 savedStore.getName(),
+                savedStore.getCurrency(),
                 new UserDTO(savedStore.getOwner()),
                 savedStore.getCreatedAt()
         );

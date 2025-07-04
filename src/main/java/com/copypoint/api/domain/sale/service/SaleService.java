@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.sale.service;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.copypoint.CopypointRepository;
+import com.copypoint.api.domain.copypoint.repository.CopypointRepository;
 import com.copypoint.api.domain.paymentmethod.PaymentMethod;
 import com.copypoint.api.domain.paymentmethod.repository.PaymentMethodRepository;
 import com.copypoint.api.domain.profile.ProfileRepository;
@@ -177,7 +177,7 @@ public class SaleService {
      * Elimina un perfil de una venta PENDING
      */
     @Transactional
-    public SaleDTO removeProfileFromSale(Long saleId, Long profileId) {
+    public SaleDTO removeProfileFromSale(Long saleId, Long profileId, Long serviceId) {
         Optional<Sale> saleOptional = saleRepository.findById(saleId);
         if (saleOptional.isEmpty()) {
             throw new RuntimeException("Venta no encontrada");
@@ -188,7 +188,7 @@ public class SaleService {
             throw new RuntimeException("Solo se pueden remover perfiles de ventas PENDING");
         }
 
-        SaleProfileId saleProfileId = new SaleProfileId(saleId, profileId);
+        SaleProfileId saleProfileId = new SaleProfileId(saleId, profileId, serviceId);
         Optional<SaleProfile> saleProfileOptional = saleProfileRepository.findById(saleProfileId);
 
         if (saleProfileOptional.isEmpty()) {

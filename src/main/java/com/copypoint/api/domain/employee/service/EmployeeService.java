@@ -8,7 +8,7 @@ import com.copypoint.api.domain.employee.dto.EmployeeDTO;
 import com.copypoint.api.domain.employeerole.EmployeeRole;
 import com.copypoint.api.domain.employeerole.EmployeeRoleRepository;
 import com.copypoint.api.domain.role.Role;
-import com.copypoint.api.domain.role.RoleRepository;
+import com.copypoint.api.domain.role.repository.RoleRepository;
 import com.copypoint.api.domain.role.RoleType;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;

@@ -2,6 +2,7 @@ package com.copypoint.api.domain.service;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
 import com.copypoint.api.domain.profile.Profile;
+import com.copypoint.api.domain.saleprofile.SaleProfile;
 import com.copypoint.api.domain.store.Store;
 import jakarta.persistence.*;
 import lombok.*;
@@ -33,6 +34,11 @@ public class Service {
     @ManyToMany(mappedBy = "services", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Profile> profiles = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "service", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @Builder.Default
+    private List<SaleProfile> saleProfiles = new ArrayList<>();
 
     private Boolean active;
 }

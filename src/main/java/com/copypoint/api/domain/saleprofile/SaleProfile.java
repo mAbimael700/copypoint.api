@@ -21,7 +21,7 @@ public class SaleProfile {
     private SaleProfileId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("saleId")
+    @MapsId("serviceId")
     @JoinColumn(name = "sale_id", referencedColumnName = "id")
     private Sale sale;
 
@@ -29,6 +29,11 @@ public class SaleProfile {
     @MapsId("profileId")
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     private Profile profile;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("serviceId")
+    @JoinColumn(name = "service_id", referencedColumnName = "id")
+    private Service service;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attachment_id", referencedColumnName = "id")

@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.modules;
+package com.copypoint.api.domain.module;
 
 import com.copypoint.api.domain.permission.Permission;
 import jakarta.persistence.*;

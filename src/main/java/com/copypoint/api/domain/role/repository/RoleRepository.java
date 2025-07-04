@@ -1,5 +1,6 @@
-package com.copypoint.api.domain.role;
+package com.copypoint.api.domain.role.repository;
 
+import com.copypoint.api.domain.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

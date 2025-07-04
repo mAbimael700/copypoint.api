@@ -10,8 +10,5 @@ import java.util.List;
 @Repository
 public interface ProfileRepository extends JpaRepository<Profile, Long> {
 
-    // Método existente
-    List<Profile> findByServicesId(Long serviceId);
-
     Page<Profile> findByServicesId(Long serviceId, Pageable pageable);
 }

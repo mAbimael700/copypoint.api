@@ -40,4 +40,7 @@ public class Copypoint {
 
     @Column(unique = true)
     private String name;
+
+    @Enumerated(EnumType.STRING)
+    private CopypointStatus status;
 }

@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 
 @RestController
-@RequestMapping("/api/stores/{storeId}/profiles")
+@RequestMapping("/api")
 public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
 
-    @GetMapping
+    @GetMapping("/stores/{storeId}/profiles")
     public ResponseEntity<Page<ProfileDTO>> getByServiceId(
             @RequestParam Long serviceId,
             Pageable pageable
@@ -26,7 +26,7 @@ public class ProfileController {
         return ResponseEntity.ok(profileService.getProfilesByServiceId(serviceId, pageable));
     }
 
-    @PostMapping
+    @PostMapping("/stores/{storeId}/profiles")
     public ResponseEntity<ProfileDTO> createProfile(
             @PathVariable Long storeId,
             @RequestBody ProfileCreationDTO creationDTO
@@ -36,4 +36,13 @@ public class ProfileController {
         return ResponseEntity.created(location).body(savedProfile);
     }
 
+    @GetMapping("/copypoints/{copypointId}/services/{serviceId}/profiles")
+    public ResponseEntity<Page<ProfileDTO>> getByCopypointAndService(
+            @PathVariable Long copypointId,
+            @PathVariable Long serviceId,
+            Pageable pageable
+    ) {
+        Page<ProfileDTO> profiles = profileService.getProfilesByServiceId(serviceId, pageable);
+        return ResponseEntity.ok(profiles);
+    }
 }

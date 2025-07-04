@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.permission;
 
-import com.copypoint.api.domain.modules.Module;
+import com.copypoint.api.domain.module.Module;
 import com.copypoint.api.domain.role.Role;
 import jakarta.persistence.*;
 import lombok.*;

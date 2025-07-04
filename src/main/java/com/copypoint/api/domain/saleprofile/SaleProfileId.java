@@ -19,4 +19,6 @@ public class SaleProfileId implements Serializable {
     private Long saleId;
     @Column(name = "profile_id")
     private Long profileId;
+    @Column(name = "service_id")
+    private Long serviceId;
 }

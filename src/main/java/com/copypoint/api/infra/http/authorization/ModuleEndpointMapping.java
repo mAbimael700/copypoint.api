@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.authorization;
 
-import com.copypoint.api.domain.modules.ModuleType;
+import com.copypoint.api.domain.module.ModuleType;
 import com.copypoint.api.infra.http.patternmatcher.PatternMatcherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,14 +24,16 @@ public class ModuleEndpointMapping {
 
 
         endpoints.put(ModuleType.COPYPOINT_MANAGEMENT, Arrays.asList(
-                        "POST:/api/stores/*/copypoints",
-                        "GET:/api/stores/*/copypoints",
                         "GET:/api/copypoints/*/sales",
                         "GET:/api/copypoints/*/sales/pending",
                         "POST:/api/copypoints/*/sales/*/profiles",
+                        "GET:/api/copypoints/*/sales/*/profiles",
+                        "POST:/api/copypoints/*/sales",
+                        "POST:/api/copypoints/*/sales/profiles",
                         "PATCH:/api/copypoints/*/sales/*/status",
                         "PATCH:/api/copypoints/*/sales/*/hold",
-                        "GET:/api/copypoints/*/services"
+                        "GET:/api/copypoints/*/services",
+                        "GET:/api/copypoints/*/services/*/profiles"
                 )
         );
 
@@ -39,7 +41,9 @@ public class ModuleEndpointMapping {
                 "POST:/api/stores/*/services",
                 "GET:/api/stores/*/services",
                 "POST:/api/stores/*/profiles",
-                "GET:/api/stores/*/profiles"
+                "GET:/api/stores/*/profiles",
+                "POST:/api/stores/*/copypoints",
+                "GET:/api/stores/*/copypoints"
         ));
 
 

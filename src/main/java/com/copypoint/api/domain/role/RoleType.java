@@ -2,8 +2,8 @@ package com.copypoint.api.domain.role;
 
 public enum RoleType {
     // Roles para Employee
-    EMPLOYEE_BASIC("EMPLOYEE_BASIC", "Empleado Básico"),
-    EMPLOYEE_SUPERVISOR("EMPLOYEE_SUPERVISOR", "Empleado Supervisor"),
+    COPYPOINT_CASHIER("COPYPOINT_CASHIER", "Empleado Básico"),
+    COPYPOINT_SUPERVISOR("COPYPOINT_SUPERVISOR", "Empleado Supervisor"),
 
     // Roles para Administrator
     STORE_MANAGER("STORE_MANAGER", "Administrador Gerente"),

@@ -1,6 +1,6 @@
-package com.copypoint.api.domain.copypoint;
+package com.copypoint.api.domain.copypoint.repository;
 
-import com.copypoint.api.domain.store.Store;
+import com.copypoint.api.domain.copypoint.Copypoint;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

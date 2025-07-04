@@ -4,7 +4,7 @@ import com.copypoint.api.domain.service.dto.ServiceCreationDTO;
 import com.copypoint.api.domain.service.dto.ServiceDTO;
 import com.copypoint.api.domain.service.repository.ServiceRepository;
 import com.copypoint.api.domain.store.Store;
-import com.copypoint.api.domain.store.StoreRepository;
+import com.copypoint.api.domain.store.repository.StoreRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

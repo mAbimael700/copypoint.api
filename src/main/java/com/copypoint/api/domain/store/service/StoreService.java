@@ -1,9 +1,11 @@
-package com.copypoint.api.domain.store;
+package com.copypoint.api.domain.store.service;
 
 import com.copypoint.api.domain.employee.service.EmployeeService;
 import com.copypoint.api.domain.role.RoleType;
+import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.store.dto.StoreCreationDTO;
 import com.copypoint.api.domain.store.dto.StoreDTO;
+import com.copypoint.api.domain.store.repository.StoreRepository;
 import com.copypoint.api.domain.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,7 @@ public class StoreService {
         Store newStore = Store.builder()
                 .createdAt(creationDate)
                 .name(creationDTO.name())
+                .currency(creationDTO.currency())
                 .owner(userOwner.get()).build();
 
 

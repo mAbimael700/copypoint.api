@@ -2,6 +2,7 @@ package com.copypoint.api.domain.sale.repository;
 
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.sale.SaleStatus;
+import org.springframework.beans.PropertyValues;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,4 +44,5 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
 
     Page<Sale> findByUserVendorIdAndCopypoint_Id(Long userId, Long copypointId, Pageable pageable);
+
 }
