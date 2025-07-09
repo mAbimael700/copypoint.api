@@ -58,7 +58,7 @@ public class MercadoPagoService {
         try {
             // Verificar que la venta existe
             Optional<Sale> saleOpt = saleRepository.findById(request.saleId());
-            if (!saleOpt.isPresent()) {
+            if (saleOpt.isEmpty()) {
                 return new PaymentResponse(false, "Venta no encontrada", null, null, null, null);
             }
 
@@ -159,7 +159,7 @@ public class MercadoPagoService {
     public PaymentStatusResponse getPaymentStatus(Long paymentId) {
         try {
             Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
-            if (!paymentOpt.isPresent()) {
+            if (paymentOpt.isEmpty()) {
                 return new PaymentStatusResponse(null, null, null, null, null, "Pago no encontrado");
             }
 
@@ -204,20 +204,13 @@ public class MercadoPagoService {
     }
 
     private PaymentStatus mapMercadoPagoStatus(String mpStatus) {
-        switch (mpStatus.toLowerCase()) {
-            case "approved":
-                return PaymentStatus.APPROVED;
-            case "rejected":
-                return PaymentStatus.REJECTED;
-            case "cancelled":
-                return PaymentStatus.CANCELLED;
-            case "refunded":
-                return PaymentStatus.REFUNDED;
-            case "pending":
-            case "in_process":
-            default:
-                return PaymentStatus.PENDING;
-        }
+        return switch (mpStatus.toLowerCase()) {
+            case "approved" -> PaymentStatus.APPROVED;
+            case "rejected" -> PaymentStatus.REJECTED;
+            case "cancelled" -> PaymentStatus.CANCELLED;
+            case "refunded" -> PaymentStatus.REFUNDED;
+            default -> PaymentStatus.PENDING;
+        };
     }
 
     public void handleWebhook(String paymentId, String status) {
