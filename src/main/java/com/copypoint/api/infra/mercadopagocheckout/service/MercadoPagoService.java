@@ -10,6 +10,7 @@ import com.copypoint.api.domain.paymentattempt.PaymentAttempt;
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;
 import com.copypoint.api.domain.sale.Sale;
+import com.copypoint.api.domain.sale.repository.SaleRepository;
 import com.copypoint.api.domain.saleprofile.SaleProfile;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mercadopago.client.common.IdentificationRequest;
