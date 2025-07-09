@@ -41,6 +41,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
+
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usar la configuración CORS
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Le indiamos a Spring el tipo de sesion
@@ -48,7 +49,6 @@ public class SecurityConfiguration {
                         auth
                                 .requestMatchers(HttpMethod.POST, "/api/auth/sign-in").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
-                                //.requestMatchers(HttpMethod.POST, "/api/users").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()

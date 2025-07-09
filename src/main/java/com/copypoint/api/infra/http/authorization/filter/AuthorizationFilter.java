@@ -58,16 +58,19 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
 
-        // No filtrar endpoints públicos
-        return path.equals("/api/auth/sign-in") ||
+        // Lista de endpoints que NO requieren filtro de autorización
+        // (pero sí requieren autenticación)
+        return path.equals("/api/exchange-rate/currencies") ||
+                path.equals("/api/auth/sign-in") ||
                 path.equals("/api/auth/sign-up") ||
                 path.equals("/api/auth/my-profile") ||
                 path.equals("/api/auth/logout") ||
                 path.equals("/api/payment-methods") ||
-                (path.equals("/api/users") && "POST".equals(request.getMethod())) ||
-                (path.equals("/api/stores") && "POST".equals(request.getMethod())) ||
-                (path.equals("/api/stores") && "GET".equals(request.getMethod())) ||
-                "OPTIONS".equals(request.getMethod());
+                (path.equals("/api/users") && "POST".equals(method)) ||
+                (path.equals("/api/stores") && "POST".equals(method)) ||
+                (path.equals("/api/stores") && "GET".equals(method)) ||
+                "OPTIONS".equals(method);
     }
 }

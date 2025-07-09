@@ -26,8 +26,9 @@ public class ModuleEndpointMapping {
         endpoints.put(ModuleType.COPYPOINT_MANAGEMENT, Arrays.asList(
                         "GET:/api/copypoints/*/sales",
                         "GET:/api/copypoints/*/sales/pending",
-                        "POST:/api/copypoints/*/sales/*/profiles",
                         "GET:/api/copypoints/*/sales/*/profiles",
+                        "POST:/api/copypoints/*/sales/*/profiles",
+                        "PATCH:/api/copypoints/*/sales/*/profiles",
                         "POST:/api/copypoints/*/sales",
                         "POST:/api/copypoints/*/sales/profiles",
                         "PATCH:/api/copypoints/*/sales/*/status",

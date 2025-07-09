@@ -8,6 +8,7 @@ import com.copypoint.api.domain.sale.dto.SaleDTO;
 import com.copypoint.api.domain.sale.service.SaleService;
 import com.copypoint.api.domain.saleprofile.dto.SaleProfileCreationDTO;
 import com.copypoint.api.domain.saleprofile.dto.SaleProfileDTO;
+import com.copypoint.api.domain.saleprofile.dto.SaleProfileUpdateDTO;
 import com.copypoint.api.domain.saleprofile.service.SaleProfileService;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
@@ -65,6 +66,17 @@ public class SalesController {
             @Valid @RequestBody SaleProfileCreationDTO saleProfileDTO) {
 
             SaleDTO updatedSale = saleProfileService.addProfileToSale(saleId, saleProfileDTO);
+            return ResponseEntity.ok(updatedSale);
+    }
+
+    @PatchMapping("/{saleId}/profiles")
+    public ResponseEntity<SaleDTO> updateSaleProfile(
+            @PathVariable Long saleId,
+            @RequestParam Long profileId,
+            @RequestParam Long serviceId,
+            @Valid @RequestBody SaleProfileUpdateDTO profileUpdate) {
+
+            SaleDTO updatedSale = saleProfileService.updateProfileInSale(saleId, profileId, serviceId, profileUpdate);
             return ResponseEntity.ok(updatedSale);
 
     }
