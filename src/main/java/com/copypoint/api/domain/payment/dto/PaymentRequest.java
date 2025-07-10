@@ -8,9 +8,11 @@ public record PaymentRequest(
 
         @NotNull
         PayerInfo payer,
-
+        @NotNull
         String description,
+        @NotNull
         Double amount,
+        @NotNull
         String currency
 ) {
 }

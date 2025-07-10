@@ -10,10 +10,15 @@ import com.copypoint.api.domain.payment.service.PaymentService;
 
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,37 +28,46 @@ import java.util.Optional;
 @Service
 @Transactional
 public class MercadoPagoService {
+
+    private static final Logger logger = LoggerFactory.getLogger(MercadoPagoService.class);
+
     @Autowired
     private PaymentService paymentService;
 
     @Autowired
     private MercadoPagoGatewayService mercadoPagoGatewayService;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // Configure ObjectMapper with Java 8 time support
+    private final ObjectMapper objectMapper;
 
-    public PaymentResponse createPayment(PaymentRequest request) {
+    public MercadoPagoService() {
+        this.objectMapper = new ObjectMapper();
+        // Register the JavaTimeModule to handle Java 8 date/time types
+        this.objectMapper.registerModule(new JavaTimeModule());
+        // Disable writing dates as timestamps
+        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+    }
+
+    public PaymentResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
+        logger.info("Iniciando creación de pago para saleId: {}", request.saleId());
+
+        Payment payment = null;
+
         try {
-            // Crear el pago en la base de datos usando el servicio de dominio
-            Payment payment = paymentService.createPayment(
-                    request.saleId(),
-                    request.amount(),
-                    request.currency()
-            );
+            // Paso 1: Crear el pago inicial en la base de datos
+            payment = createInitialPayment(request);
+            logger.info("Payment creado con ID: {}", payment.getId());
 
-            // Crear la preferencia en MercadoPago
+            // Paso 2: Crear la preferencia en MercadoPago (sin transacción)
+            logger.info("Creando preferencia en MercadoPago...");
             Preference preference = mercadoPagoGatewayService.createPreference(payment, request);
+            logger.info("Preferencia creada con ID: {}", preference.getId());
 
-            // Actualizar el payment con el ID de MercadoPago
-            payment = paymentService.updatePaymentGatewayId(payment.getId(), preference.getId());
+            // Paso 3: Actualizar el payment con los datos de MercadoPago
+            payment = updatePaymentWithPreferenceData(payment, preference);
+            logger.info("Payment actualizado con datos de MercadoPago");
 
-            // Crear registro de intento de pago
-            paymentService.createPaymentAttempt(
-                    payment,
-                    PaymentAttemptStatus.PENDING,
-                    objectMapper.writeValueAsString(preference)
-            );
-
-            return new PaymentResponse(
+            PaymentResponse response = new PaymentResponse(
                     true,
                     "Pago creado exitosamente",
                     preference.getInitPoint(),
@@ -62,12 +76,112 @@ public class MercadoPagoService {
                     PaymentStatus.PENDING
             );
 
+            logger.info("Proceso completado exitosamente");
+            return response;
+
         } catch (IllegalArgumentException e) {
+            logger.error("Error de validación: {}", e.getMessage());
+
+            // Si ya se creó el payment, marcarlo como fallido
+            if (payment != null) {
+                markPaymentAsFailed(payment, "Error de validación: " + e.getMessage());
+            }
+
             return new PaymentResponse(false, e.getMessage(), null, null, null, null);
+
         } catch (MPException | MPApiException e) {
+            logger.error("Error de MercadoPago: {}", e.getMessage());
+
+            // Si ya se creó el payment, marcarlo como fallido
+            if (payment != null) {
+                markPaymentAsFailed(payment, "Error de MercadoPago: " + e.getMessage());
+            }
+
             return new PaymentResponse(false, "Error al crear el pago: " + e.getMessage(), null, null, null, null);
+
         } catch (Exception e) {
+            logger.error("Error interno: {}", e.getMessage(), e);
+
+            // Si ya se creó el payment, marcarlo como fallido
+            if (payment != null) {
+                markPaymentAsFailed(payment, "Error interno: " + e.getMessage());
+            }
+
             return new PaymentResponse(false, "Error interno: " + e.getMessage(), null, null, null, null);
+        }
+    }
+
+    @Transactional
+    private Payment createInitialPayment(PaymentRequest request) {
+        return paymentService.createPayment(
+                request.saleId(),
+                request.amount(),
+                request.currency()
+        );
+    }
+
+    @Transactional
+    private Payment updatePaymentWithPreferenceData(Payment payment, Preference preference) {
+        try {
+            // Actualizar el payment con el ID de MercadoPago
+            Payment updatedPayment = paymentService.updatePaymentGatewayId(
+                    payment.getId(),
+                    preference.getId()
+            );
+
+            // Create a simplified version of the preference data to avoid serialization issues
+            String preferenceData = createSimplifiedPreferenceData(preference);
+
+            // Crear registro de intento de pago
+            paymentService.createPaymentAttempt(
+                    updatedPayment,
+                    PaymentAttemptStatus.PENDING,
+                    preferenceData
+            );
+
+            return updatedPayment;
+
+        } catch (JsonProcessingException e) {
+            logger.error("Error al serializar preference: {}", e.getMessage());
+            throw new RuntimeException("Error al procesar datos de MercadoPago", e);
+        }
+    }
+
+    /**
+     * Creates a simplified JSON representation of the preference data to avoid serialization issues
+     */
+    private String createSimplifiedPreferenceData(Preference preference) throws JsonProcessingException {
+        // Create a simplified object with only the essential data
+        var simplifiedData = new Object() {
+            public final String id = preference.getId();
+            public final String initPoint = preference.getInitPoint();
+            public final String sandboxInitPoint = preference.getSandboxInitPoint();
+            public final String dateCreated = preference.getDateCreated() != null ?
+                    preference.getDateCreated().toString() : null;
+            public final String externalReference = preference.getExternalReference();
+        };
+
+        return objectMapper.writeValueAsString(simplifiedData);
+    }
+
+    @Transactional
+    private void markPaymentAsFailed(Payment payment, String errorMessage) {
+        try {
+            // Actualizar el estado del payment a fallido
+            paymentService.updatePaymentStatus(payment.getId(), PaymentStatus.FAILED);
+
+            // Crear registro de intento fallido
+            paymentService.createPaymentAttempt(
+                    payment,
+                    PaymentAttemptStatus.FAILED,
+                    errorMessage
+            );
+
+            logger.info("Payment {} marcado como fallido", payment.getId());
+
+        } catch (Exception e) {
+            logger.error("Error al marcar payment como fallido: {}", e.getMessage());
+            // No re-lanzar la excepción para no ocultar el error original
         }
     }
 
@@ -112,7 +226,7 @@ public class MercadoPagoService {
             );
 
         } catch (Exception e) {
-            System.err.println("Error procesando webhook: " + e.getMessage());
+            logger.error("Error procesando webhook: {}", e.getMessage());
         }
     }
 
@@ -126,7 +240,7 @@ public class MercadoPagoService {
 
         } catch (Exception e) {
             // Log del error pero no fallar
-            System.err.println("Error al actualizar estado desde MercadoPago: " + e.getMessage());
+            logger.error("Error al actualizar estado desde MercadoPago: {}", e.getMessage());
         }
     }
 }

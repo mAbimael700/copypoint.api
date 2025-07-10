@@ -4,6 +4,8 @@ import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.payment.dto.PaymentResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
 import com.copypoint.api.infra.mercadopagocheckout.service.MercadoPagoService;
+import com.mercadopago.exceptions.MPApiException;
+import com.mercadopago.exceptions.MPException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,12 +30,27 @@ public class MercadoPagoController {
     public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
         try {
             PaymentResponse response = mercadoPagoService.createPayment(request);
-
-            if (response.success()) {
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.badRequest().body(response);
-            }
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            PaymentResponse errorResponse = new PaymentResponse(
+                    false,
+                    e.getMessage(),
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            return ResponseEntity.badRequest().body(errorResponse);
+        } catch (MPException | MPApiException e) {
+            PaymentResponse errorResponse = new PaymentResponse(
+                    false,
+                    "Error al crear el pago: " + e.getMessage(),
+                    null,
+                    null,
+                    null,
+                    null
+            );
+            return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
             PaymentResponse errorResponse = new PaymentResponse(
                     false,
