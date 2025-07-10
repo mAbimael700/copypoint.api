@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -30,6 +32,7 @@ public class PaymentAttempt {
     private String errorCode;
 
     @Column(name = "gateway_response", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     private String gatewayResponse;
 
     @Column(name = "created_at")
