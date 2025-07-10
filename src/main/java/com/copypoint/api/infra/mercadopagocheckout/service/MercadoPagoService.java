@@ -10,6 +10,7 @@ import com.copypoint.api.domain.payment.service.PaymentService;
 
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 
+import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -36,6 +37,9 @@ public class MercadoPagoService {
 
     @Autowired
     private MercadoPagoGatewayService mercadoPagoGatewayService;
+
+    @Autowired
+    private PaymentAttemptService paymentAttemptService;
 
     // Configure ObjectMapper with Java 8 time support
     private final ObjectMapper objectMapper;
@@ -129,39 +133,15 @@ public class MercadoPagoService {
                     preference.getId()
             );
 
-            // Create a simplified version of the preference data to avoid serialization issues
-            String preferenceData = createSimplifiedPreferenceData(preference);
-
-            // Crear registro de intento de pago
-            paymentService.createPaymentAttempt(
-                    updatedPayment,
-                    PaymentAttemptStatus.PENDING,
-                    preferenceData
-            );
+            // Crear registro de intento de pago usando el servicio especializado
+            paymentAttemptService.createMercadoPagoPreferenceAttempt(updatedPayment, preference);
 
             return updatedPayment;
 
-        } catch (JsonProcessingException e) {
-            logger.error("Error al serializar preference: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error al actualizar payment con datos de preferencia: {}", e.getMessage());
             throw new RuntimeException("Error al procesar datos de MercadoPago", e);
         }
-    }
-
-    /**
-     * Creates a simplified JSON representation of the preference data to avoid serialization issues
-     */
-    private String createSimplifiedPreferenceData(Preference preference) throws JsonProcessingException {
-        // Create a simplified object with only the essential data
-        var simplifiedData = new Object() {
-            public final String id = preference.getId();
-            public final String initPoint = preference.getInitPoint();
-            public final String sandboxInitPoint = preference.getSandboxInitPoint();
-            public final String dateCreated = preference.getDateCreated() != null ?
-                    preference.getDateCreated().toString() : null;
-            public final String externalReference = preference.getExternalReference();
-        };
-
-        return objectMapper.writeValueAsString(simplifiedData);
     }
 
     @Transactional
@@ -170,10 +150,11 @@ public class MercadoPagoService {
             // Actualizar el estado del payment a fallido
             paymentService.updatePaymentStatus(payment.getId(), PaymentStatus.FAILED);
 
-            // Crear registro de intento fallido
-            paymentService.createPaymentAttempt(
+            // Crear registro de intento fallido usando el servicio especializado
+            paymentAttemptService.createPaymentAttemptWithError(
                     payment,
                     PaymentAttemptStatus.FAILED,
+                    "PAYMENT_CREATION_ERROR",
                     errorMessage
             );
 
@@ -213,16 +194,23 @@ public class MercadoPagoService {
         }
     }
 
-    public void handleWebhook(String paymentId, String status) {
+    public void handleWebhook(String webHookPaymentId, String webHookstatus) {
         try {
-            PaymentStatus newStatus = mercadoPagoGatewayService.mapMercadoPagoStatus(status);
-            Payment payment = paymentService.updatePaymentStatusByGatewayId(paymentId, newStatus);
+            PaymentStatus newStatus = mercadoPagoGatewayService.mapMercadoPagoStatus(webHookstatus);
+            Payment payment = paymentService.updatePaymentStatusByGatewayId(webHookPaymentId, newStatus);
 
-            // Crear registro de intento
-            paymentService.createPaymentAttempt(
+            // Crear registro de intento usando el servicio especializado
+            var webhookData = new Object() {
+                public final String paymentId = webHookPaymentId;
+                public final String status = webHookstatus;
+                public final String type = "WEBHOOK_NOTIFICATION";
+                public final String timestamp = java.time.LocalDateTime.now().toString();
+            };
+
+            paymentAttemptService.createPaymentAttempt(
                     payment,
                     PaymentAttemptStatus.valueOf(newStatus.name()),
-                    "{\"status\":\"" + status + "\"}"
+                    webhookData
             );
 
         } catch (Exception e) {
@@ -236,10 +224,23 @@ public class MercadoPagoService {
 
             if (gatewayStatus != null && gatewayStatus != payment.getStatus()) {
                 paymentService.updatePaymentStatus(payment.getId(), gatewayStatus);
+
+                // Registrar la actualización de estado
+                var statusUpdateData = new Object() {
+                    public final String previousStatus = payment.getStatus().name();
+                    public final String newStatus = gatewayStatus.name();
+                    public final String type = "STATUS_UPDATE_FROM_GATEWAY";
+                    public final String timestamp = java.time.LocalDateTime.now().toString();
+                };
+
+                paymentAttemptService.createPaymentAttempt(
+                        payment,
+                        PaymentAttemptStatus.valueOf(gatewayStatus.name()),
+                        statusUpdateData
+                );
             }
 
         } catch (Exception e) {
-            // Log del error pero no fallar
             logger.error("Error al actualizar estado desde MercadoPago: {}", e.getMessage());
         }
     }
