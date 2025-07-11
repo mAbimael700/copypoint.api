@@ -1,5 +1,6 @@
 package com.copypoint.api.infra.mercadopagocheckout.service;
 
+import com.copypoint.api.domain.mercadopagoconfiguration.service.MercadoPagoConfigurationService;
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
@@ -15,17 +16,22 @@ import com.mercadopago.net.MPResponse;
 import com.mercadopago.resources.preference.Preference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class MercadoPagoGatewayService {
 
     private static final Logger logger = LoggerFactory.getLogger(MercadoPagoGatewayService.class);
+
+    @Autowired
+    private MercadoPagoConfigurationService mercadoPagoConfigService;
 
     @Value("${frontend.success.url}")
     private String successUrl;
@@ -37,9 +43,16 @@ public class MercadoPagoGatewayService {
     private String pendingUrl;
 
     public Preference createPreference(Payment payment, PaymentRequest request) throws MPException, MPApiException {
-        PreferenceClient client = new PreferenceClient();
 
         Sale sale = payment.getSale();
+
+        // Configurar MercadoPago SDK con el token del store/copypoint
+        boolean configured = mercadoPagoConfigService.configureForSale(sale);
+        if (!configured) {
+            throw new IllegalStateException("No se encontró configuración de MercadoPago para la venta");
+        }
+
+        PreferenceClient client = new PreferenceClient();
 
         // Crear items desde los saleProfiles
         List<PreferenceItemRequest> items = createItemsFromSale(sale);
@@ -50,17 +63,28 @@ public class MercadoPagoGatewayService {
         // Configurar URLs de retorno
         PreferenceBackUrlsRequest backUrls = createBackUrlsRequest(payment);
 
+        // Obtener email del vendedor desde la configuración
+        String vendorEmail = mercadoPagoConfigService.getVendorEmailForSale(sale);
+
         // Crear la preferencia
-        PreferenceRequest preferenceRequest = PreferenceRequest.builder()
+        PreferenceRequest.PreferenceRequestBuilder builder = PreferenceRequest.builder()
                 .items(items)
                 .payer(payer)
                 .backUrls(backUrls)
-                //.autoReturn("approved")
                 .externalReference(payment.getId().toString())
                 .statementDescriptor(request.description() != null ? request.description() : "Pago CopyPoint")
-                .build();
+                .metadata(Map.of(
+                        "store_id", sale.getCopypoint().getStore().getId().toString(),
+                        "copypoint_id", sale.getCopypoint().getId().toString(),
+                        "vendor_email", vendorEmail,
+                        "sale_id", sale.getId().toString()
+                ));
 
-        logger.info("Enviando request a MercadoPago...");
+        PreferenceRequest preferenceRequest = builder.build();
+
+        logger.info("Creando preferencia para Copypoint: {}, Vendor: {}",
+                sale.getCopypoint().getId(),
+                vendorEmail);
 
         try {
             Preference preference = client.create(preferenceRequest);

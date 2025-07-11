@@ -244,4 +244,8 @@ public class MercadoPagoService {
             logger.error("Error al actualizar estado desde MercadoPago: {}", e.getMessage());
         }
     }
+
+    public Payment getPaymentByGatewayId(String paymentId) {
+        return paymentService.getByPaymentByGatewayId(paymentId);
+    }
 }
