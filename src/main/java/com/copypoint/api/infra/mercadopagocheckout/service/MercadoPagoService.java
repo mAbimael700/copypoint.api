@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -246,6 +247,11 @@ public class MercadoPagoService {
     }
 
     public Payment getPaymentByGatewayId(String paymentId) {
-        return paymentService.findByGatewayId(paymentId).get();
+        try {
+            return paymentService.findByGatewayId(paymentId).orElseThrow();
+        } catch (NoSuchElementException e) {
+            logger.error("Error al consultar el payment desde PaymentService: {}", e.getMessage());
+        }
+        return null;
     }
 }
