@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.copypoint;
 
+import com.copypoint.api.domain.mercadopagoconfiguration.MercadoPagoConfiguration;
 import com.copypoint.api.domain.store.Store;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.domain.employee.Employee;
@@ -7,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -43,4 +45,8 @@ public class Copypoint {
 
     @Enumerated(EnumType.STRING)
     private CopypointStatus status;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "copypoint")
+    @Builder.Default
+    private List<MercadoPagoConfiguration> mercadoPagoConfigurations = new ArrayList<>();
 }
