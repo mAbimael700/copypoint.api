@@ -6,6 +6,9 @@ import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.saleprofile.SaleProfile;
+import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoItemFactory;
+import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoPayerFactory;
+import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoUrlFactory;
 import com.mercadopago.client.common.IdentificationRequest;
 import com.mercadopago.client.common.PhoneRequest;
 import com.mercadopago.client.payment.PaymentClient;
@@ -24,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class MercadoPagoGatewayService {
@@ -33,185 +37,109 @@ public class MercadoPagoGatewayService {
     @Autowired
     private MercadoPagoConfigurationService mercadoPagoConfigService;
 
-    @Value("${frontend.success.url}")
-    private String successUrl;
+    @Autowired
+    private MercadoPagoGatewayConfigurationService mercadoPagoGatewayConfigurationService;
 
-    @Value("${frontend.failure.url}")
-    private String failureUrl;
+    @Autowired
+    private MercadoPagoItemFactory itemFactory;
 
-    @Value("${frontend.pending.url}")
-    private String pendingUrl;
+    @Autowired
+    private MercadoPagoPayerFactory payerFactory;
+
+    @Autowired
+    private MercadoPagoUrlFactory urlFactory;
 
     public Preference createPreference(Payment payment, PaymentRequest request) throws MPException, MPApiException {
-
         Sale sale = payment.getSale();
 
         // Configurar MercadoPago SDK con el token del store/copypoint
-        boolean configured = mercadoPagoConfigService.configureForSale(sale);
+        boolean configured = mercadoPagoGatewayConfigurationService.configureForSale(sale);
         if (!configured) {
             throw new IllegalStateException("No se encontró configuración de MercadoPago para la venta");
         }
 
         PreferenceClient client = new PreferenceClient();
 
-        // Crear items desde los saleProfiles
-        List<PreferenceItemRequest> items = createItemsFromSale(sale);
-
-        // Configurar payer
-        PreferencePayerRequest payer = createPayerRequest(request);
-
-        // Configurar URLs de retorno
-        PreferenceBackUrlsRequest backUrls = createBackUrlsRequest(payment);
+        // Crear componentes de la preferencia usando las factories
+        List<PreferenceItemRequest> items = itemFactory.createItemsFromSale(sale, request);
+        PreferencePayerRequest payer = payerFactory.createPayerRequest(request);
+        PreferenceBackUrlsRequest backUrls = urlFactory.createBackUrlsRequest(payment);
 
         // Obtener email del vendedor desde la configuración
         String vendorEmail = mercadoPagoConfigService.getVendorEmailForSale(sale);
 
         // Crear la preferencia
-        PreferenceRequest.PreferenceRequestBuilder builder = PreferenceRequest.builder()
+        PreferenceRequest preferenceRequest = buildPreferenceRequest(
+                items, payer, backUrls, payment, request, sale, vendorEmail);
+
+        logger.info("Creando preferencia para Copypoint: {}, Vendor: {}",
+                sale.getCopypoint().getId(), vendorEmail);
+
+        return createPreferenceWithErrorHandling(client, preferenceRequest);
+    }
+
+    private PreferenceRequest buildPreferenceRequest(
+            List<PreferenceItemRequest> items,
+            PreferencePayerRequest payer,
+            PreferenceBackUrlsRequest backUrls,
+            Payment payment,
+            PaymentRequest request,
+            Sale sale,
+            String vendorEmail) {
+
+        return PreferenceRequest.builder()
                 .items(items)
                 .payer(payer)
                 .backUrls(backUrls)
                 .externalReference(payment.getId().toString())
                 .statementDescriptor(request.description() != null ? request.description() : "Pago CopyPoint")
-                .metadata(Map.of(
-                        "store_id", sale.getCopypoint().getStore().getId().toString(),
-                        "copypoint_id", sale.getCopypoint().getId().toString(),
-                        "vendor_email", vendorEmail,
-                        "sale_id", sale.getId().toString()
-                ));
+                .metadata(createMetadata(sale, vendorEmail, payment.getId(), request.amount()))
+                .build();
+    }
 
-        PreferenceRequest preferenceRequest = builder.build();
+    private Map<String, Object> createMetadata(Sale sale, String vendorEmail, Long paymentId, Double amount) {
+        return Map.of(
+                "store_id", sale.getCopypoint().getStore().getId().toString(),
+                "copypoint_id", sale.getCopypoint().getId().toString(),
+                "vendor_email", vendorEmail,
+                "sale_id", sale.getId().toString(),
+                "payment_amount", amount.toString()
+        );
+    }
 
-        logger.info("Creando preferencia para Copypoint: {}, Vendor: {}",
-                sale.getCopypoint().getId(),
-                vendorEmail);
-
+    private Preference createPreferenceWithErrorHandling(PreferenceClient client, PreferenceRequest preferenceRequest)
+            throws MPException, MPApiException {
         try {
             Preference preference = client.create(preferenceRequest);
             logger.info("Preference creada exitosamente - ID: {}", preference.getId());
             return preference;
         } catch (MPApiException e) {
-            // Obtener detalles del error
-            logger.error("MPApiException details:");
-            logger.error("Status Code: {}", e.getStatusCode());
-            logger.error("Message: {}", e.getMessage());
-
-            if (e.getApiResponse() != null) {
-                logger.error("API Response: {}", e.getApiResponse().getContent());
-            }
-
-            // Re-lanzar con información adicional
-            throw new MPApiException(
-                    "MercadoPago API Error - Status: " + e.getStatusCode() +
-                    ", Message: " + e.getMessage() +
-                    (e.getApiResponse() != null ? ", Response: "
-                            + e.getApiResponse().getContent() : ""), e.getApiResponse());
-
+            handleMPApiException(e);
+            throw e; // Re-lanzar después del logging
         } catch (MPException e) {
             logger.error("MPException: {}", e.getMessage());
             throw e;
         }
     }
 
-    private List<PreferenceItemRequest> createItemsFromSale(Sale sale) {
-        List<PreferenceItemRequest> items = new ArrayList<>();
+    private void handleMPApiException(MPApiException e) throws MPApiException {
+        logger.error("MPApiException details:");
+        logger.error("Status Code: {}", e.getStatusCode());
+        logger.error("Message: {}", e.getMessage());
 
-        for (SaleProfile saleProfile : sale.getSaleProfiles()) {
-            // Validar datos antes de crear el item
-            String title = saleProfile.getService().getName();
-            String description = saleProfile.getProfile().getDescription();
-            Integer quantity = saleProfile.getQuantity();
-            BigDecimal unitPrice = BigDecimal.valueOf(saleProfile.getUnitPrice());
-            String currencyId = sale.getCurrency();
-
-            // Log para debugging
-            logger.debug("Creating item: title={}, quantity={}, unitPrice={}, currency={}",
-                    title, quantity, unitPrice, currencyId);
-
-            // Validaciones
-            if (title == null || title.trim().isEmpty()) {
-                throw new IllegalArgumentException("El nombre del servicio no puede estar vacío");
-            }
-            if (quantity == null || quantity <= 0) {
-                throw new IllegalArgumentException("La cantidad debe ser mayor a 0");
-            }
-            if (unitPrice == null || unitPrice.compareTo(BigDecimal.ZERO) <= 0) {
-                throw new IllegalArgumentException("El precio unitario debe ser mayor a 0");
-            }
-            if (currencyId == null || currencyId.trim().isEmpty()) {
-                throw new IllegalArgumentException("La moneda no puede estar vacía");
-            }
-
-            PreferenceItemRequest itemRequest = PreferenceItemRequest.builder()
-                    .title(title.trim())
-                    .description(description != null ? description.trim() : title.trim())
-                    .quantity(quantity)
-                    .unitPrice(unitPrice)
-                    .currencyId(currencyId.toUpperCase())
-                    .build();
-            items.add(itemRequest);
+        if (e.getApiResponse() != null) {
+            logger.error("API Response: {}", e.getApiResponse().getContent());
         }
 
-        if (items.isEmpty()) {
-            throw new IllegalArgumentException("La venta debe tener al menos un item");
-        }
-
-        return items;
+        // Crear nueva excepción con información adicional
+        throw new MPApiException(
+                String.format("MercadoPago API Error - Status: %d, Message: %s%s",
+                        e.getStatusCode(),
+                        e.getMessage(),
+                        e.getApiResponse() != null ? ", Response: " + e.getApiResponse().getContent() : ""),
+                e.getApiResponse());
     }
 
-    private PreferencePayerRequest createPayerRequest(PaymentRequest request) {
-        // Validar datos del payer
-        if (request.payer() == null) {
-            throw new IllegalArgumentException("Los datos del pagador son requeridos");
-        }
-
-        String firstName = request.payer().firstName();
-        String lastName = request.payer().lastName();
-        String email = request.payer().email();
-        String phone = request.payer().phone();
-        String identificationType = request.payer().identificationType();
-        String identification = request.payer().identification();
-
-        // Validaciones básicas
-        if (firstName == null || firstName.trim().isEmpty()) {
-            throw new IllegalArgumentException("El nombre del pagador es requerido");
-        }
-        if (lastName == null || lastName.trim().isEmpty()) {
-            throw new IllegalArgumentException("El apellido del pagador es requerido");
-        }
-        if (email == null || email.trim().isEmpty()) {
-            throw new IllegalArgumentException("El email del pagador es requerido");
-        }
-
-        logger.debug("Creating payer: name={} {}, email={}", firstName, lastName, email);
-
-        return PreferencePayerRequest.builder()
-                .name(firstName.trim())
-                .surname(lastName.trim())
-                .email(email.trim())
-                .phone(phone != null ? PhoneRequest.builder()
-                        .number(phone.trim())
-                        .build() : null)
-                .identification(identificationType != null && identification != null ?
-                        IdentificationRequest.builder()
-                                .type(identificationType.trim())
-                                .number(identification.trim())
-                                .build() : null)
-                .build();
-    }
-
-    private PreferenceBackUrlsRequest createBackUrlsRequest(Payment payment) {
-        logger.info("Configurando URLs: success={}, failure={}, pending={}",
-                successUrl, failureUrl, pendingUrl);
-
-        return PreferenceBackUrlsRequest.builder()
-                .success(successUrl + "?payment_id=" + payment.getId())
-                .failure(failureUrl + "?payment_id=" + payment.getId())
-                .pending(pendingUrl + "?payment_id=" + payment.getId())
-                .build();
-    }
-
-    // Resto de métodos sin cambios...
     public PaymentStatus getPaymentStatusFromGateway(String gatewayId) {
         try {
             PaymentClient client = new PaymentClient();
@@ -232,5 +160,6 @@ public class MercadoPagoGatewayService {
             case "refunded" -> PaymentStatus.REFUNDED;
             default -> PaymentStatus.PENDING;
         };
+
     }
 }
