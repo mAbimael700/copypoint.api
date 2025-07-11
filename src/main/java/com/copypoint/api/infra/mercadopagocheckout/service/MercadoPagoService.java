@@ -246,6 +246,6 @@ public class MercadoPagoService {
     }
 
     public Payment getPaymentByGatewayId(String paymentId) {
-        return paymentService.getByPaymentByGatewayId(paymentId);
+        return paymentService.findByGatewayId(paymentId).get();
     }
 }
