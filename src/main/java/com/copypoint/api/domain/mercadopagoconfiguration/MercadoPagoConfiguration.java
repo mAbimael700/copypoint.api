@@ -25,20 +25,20 @@ public class MercadoPagoConfiguration {
     @JoinColumn(name = "copypoint_id", referencedColumnName = "id")
     private Copypoint copypoint;
 
-    @Column(name = "access_token", length = 500)
-    private String accessToken;
+    @Column(name = "access_token_encrypted", nullable = false, length = 1000)
+    private String accessTokenEncrypted;
 
-    @Column(name = "public_key", length = 500)
-    private String publicKey;
+    @Column(name = "public_key_encrypted", nullable = false, length = 1000)
+    private String publicKeyEncrypted;
 
-    @Column(name = "client_id", length = 200)
+    @Column(name = "client_secret_encrypted", nullable = false, length = 1000)
+    private String clientSecretEncrypted;
+
+    @Column(name = "webhook_secret_encrypted", nullable = false, length = 1000)
+    private String webhookSecretEncrypted;
+
+    @Column(name = "client_id", length = 200, nullable = false)
     private String clientId;
-
-    @Column(name = "client_secret", length = 500)
-    private String clientSecret;
-
-    @Column(name = "webhook_secret", length = 200)
-    private String webhookSecret;
 
     @Column(name = "is_sandbox")
     private Boolean isSandbox;
