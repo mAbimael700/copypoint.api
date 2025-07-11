@@ -35,7 +35,8 @@ public class ModuleEndpointMapping {
                         "PATCH:/api/copypoints/*/sales/*/hold",
                         "GET:/api/copypoints/*/services",
                         "GET:/api/copypoints/*/services/*/profiles",
-                "POST:/api/payments/mercadopago"
+                        "POST:/api/payments/mercadopago",
+                        "POST:/api/copypoints/*/mercadopago-config"
                 )
         );
 
