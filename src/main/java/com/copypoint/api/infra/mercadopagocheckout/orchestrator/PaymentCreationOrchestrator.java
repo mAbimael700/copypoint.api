@@ -42,7 +42,7 @@ public class PaymentCreationOrchestrator {
 
         try {
             // Paso 1: Crear el pago inicial en la base de datos
-            payment = createInitialPayment(request);
+            payment = paymentService.createPayment(request);
             logger.info("Payment creado con ID: {}", payment.getId());
 
             // Paso 2: Crear la preferencia en MercadoPago
@@ -75,14 +75,6 @@ public class PaymentCreationOrchestrator {
         }
     }
 
-    @Transactional
-    private Payment createInitialPayment(PaymentRequest request) {
-        return paymentService.createPayment(
-                request.saleId(),
-                request.amount(),
-                request.currency()
-        );
-    }
 
     @Transactional
     private Payment updatePaymentWithPreferenceData(Payment payment, Preference preference) {
