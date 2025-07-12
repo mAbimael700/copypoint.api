@@ -143,4 +143,16 @@ public class PaymentService {
     public Optional<Payment> findByGatewayId(String gatewayId) {
         return paymentRepository.findByGatewayId(gatewayId);
     }
+
+    /**
+     * Valida si se puede crear un pago sin crearlo
+     */
+    public ValidationResult validatePaymentCreation(PaymentRequest paymentRequest) {
+        Optional<Sale> saleOpt = saleRepository.findById(paymentRequest.saleId());
+        if (saleOpt.isEmpty()) {
+            return ValidationResult.failure("Venta no encontrada");
+        }
+
+        return paymentValidationService.validatePayment(saleOpt.get(), paymentRequest);
+    }
 }
