@@ -2,8 +2,11 @@ package com.copypoint.api.domain.payment.service;
 
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
+import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
 import com.copypoint.api.domain.payment.repository.PaymentRepository;
+import com.copypoint.api.domain.payment.validation.ValidationResult;
+import com.copypoint.api.domain.payment.validation.service.PaymentValidationService;
 import com.copypoint.api.domain.paymentattempt.PaymentAttempt;
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;
@@ -29,32 +32,32 @@ public class PaymentService {
     @Autowired
     private SaleRepository saleRepository;
 
+    @Autowired
+    private PaymentValidationService paymentValidationService;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Payment createPayment(Long saleId, Double amount, String currency) {
+    public Payment createPayment(PaymentRequest paymentRequest) {
         // Verificar que la venta existe
-        Optional<Sale> saleOpt = saleRepository.findById(saleId);
+        Optional<Sale> saleOpt = saleRepository.findById(paymentRequest.saleId());
         if (saleOpt.isEmpty()) {
             throw new IllegalArgumentException("Venta no encontrada");
         }
 
         Sale sale = saleOpt.get();
 
-        // Verificar que la venta tenga items
-        if (sale.getSaleProfiles().isEmpty()) {
-            throw new IllegalArgumentException("Sale does not have sale profiles");
-        }
+        // Ejecutar validaciones
+        ValidationResult validationResult = paymentValidationService.validatePayment(sale, paymentRequest);
 
-        // Validar que el amount no sea mayor al total de la venta
-        if (amount.compareTo(sale.getTotal()) > 0) {
-            throw new IllegalArgumentException("Payment amount can not be more than total sale");
+        if (!validationResult.isValid()) {
+            throw new IllegalArgumentException("Validación fallida: " + String.join(", ", validationResult.getErrors()));
         }
 
         // Crear el pago en la base de datos
         Payment payment = new Payment();
         payment.setSale(sale);
-        payment.setAmount(amount);
-        payment.setCurrency(currency != null ? currency : sale.getCurrency());
+        payment.setAmount(paymentRequest.amount());
+        payment.setCurrency(paymentRequest.currency() != null ? paymentRequest.currency() : sale.getCurrency());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setCreatedAt(LocalDateTime.now());
 
