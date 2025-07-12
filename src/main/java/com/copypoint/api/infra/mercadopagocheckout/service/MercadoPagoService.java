@@ -11,7 +11,6 @@ import com.copypoint.api.domain.payment.service.PaymentService;
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 
 import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -42,15 +41,13 @@ public class MercadoPagoService {
     @Autowired
     private PaymentAttemptService paymentAttemptService;
 
-    // Configure ObjectMapper with Java 8 time support
-    private final ObjectMapper objectMapper;
-
     public MercadoPagoService() {
-        this.objectMapper = new ObjectMapper();
+        // Configure ObjectMapper with Java 8 time support
+        ObjectMapper objectMapper = new ObjectMapper();
         // Register the JavaTimeModule to handle Java 8 date/time types
-        this.objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.registerModule(new JavaTimeModule());
         // Disable writing dates as timestamps
-        this.objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
     public PaymentResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
@@ -98,9 +95,7 @@ public class MercadoPagoService {
             logger.error("Error de MercadoPago: {}", e.getMessage());
 
             // Si ya se creó el payment, marcarlo como fallido
-            if (payment != null) {
-                markPaymentAsFailed(payment, "Error de MercadoPago: " + e.getMessage());
-            }
+            markPaymentAsFailed(payment, "Error de MercadoPago: " + e.getMessage());
 
             return new PaymentResponse(false, "Error al crear el pago: " + e.getMessage(), null, null, null, null);
 

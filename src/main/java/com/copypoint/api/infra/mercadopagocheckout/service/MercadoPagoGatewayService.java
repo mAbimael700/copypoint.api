@@ -5,29 +5,23 @@ import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.sale.Sale;
-import com.copypoint.api.domain.saleprofile.SaleProfile;
 import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoItemFactory;
 import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoPayerFactory;
 import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoUrlFactory;
-import com.mercadopago.client.common.IdentificationRequest;
-import com.mercadopago.client.common.PhoneRequest;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
-import com.mercadopago.net.MPResponse;
 import com.mercadopago.resources.preference.Preference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+
 
 @Service
 public class MercadoPagoGatewayService {
