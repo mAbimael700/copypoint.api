@@ -41,7 +41,7 @@ public class MercadoPagoItemFactory {
 
     private PreferenceItemRequest createItemFromSaleProfile(SaleProfile saleProfile, String currency) {
         String title = saleProfile.getService().getName();
-        String description = saleProfile.getProfile().getDescription();
+        String description = saleProfile.getProfile().getName();
         Integer quantity = saleProfile.getQuantity();
         BigDecimal unitPrice = BigDecimal.valueOf(saleProfile.getUnitPrice());
 
