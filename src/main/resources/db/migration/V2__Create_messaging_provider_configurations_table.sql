@@ -24,18 +24,3 @@ COMMENT ON COLUMN messaging_provider_configurations.id IS 'Primary key';
 COMMENT ON COLUMN messaging_provider_configurations.provider_type IS 'Discriminator column for JPA inheritance';
 COMMENT ON COLUMN messaging_provider_configurations.is_active IS 'Flag to indicate if configuration is active';
 COMMENT ON COLUMN messaging_provider_configurations.display_name IS 'Human readable name for the configuration';
-
--- Create function to update the updated_at timestamp
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $
-BEGIN
-    NEW.updated_at = CURRENT_TIMESTAMP;
-    RETURN NEW;
-END;
-$ language 'plpgsql';
-
--- Create trigger to automatically update updated_at
-CREATE TRIGGER update_messaging_provider_configurations_updated_at
-    BEFORE UPDATE ON messaging_provider_configurations
-    FOR EACH ROW
-    EXECUTE FUNCTION update_updated_at_column();
