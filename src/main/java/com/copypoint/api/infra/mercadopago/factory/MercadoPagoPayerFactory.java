@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.mercadopagocheckout.factory;
+package com.copypoint.api.infra.mercadopago.factory;
 
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.mercadopago.client.common.IdentificationRequest;

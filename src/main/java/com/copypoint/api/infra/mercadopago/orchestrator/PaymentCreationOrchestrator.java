@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.mercadopagocheckout.orchestrator;
+package com.copypoint.api.infra.mercadopago.orchestrator;
 
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
@@ -7,7 +7,7 @@ import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.service.PaymentService;
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
-import com.copypoint.api.infra.mercadopagocheckout.service.MercadoPagoGatewayService;
+import com.copypoint.api.infra.mercadopago.service.MercadoPagoGatewayService;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import com.mercadopago.resources.preference.Preference;

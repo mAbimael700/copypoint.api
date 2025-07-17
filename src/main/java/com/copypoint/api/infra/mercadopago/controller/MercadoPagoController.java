@@ -1,9 +1,9 @@
-package com.copypoint.api.infra.mercadopagocheckout.controller;
+package com.copypoint.api.infra.mercadopago.controller;
 
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
-import com.copypoint.api.infra.mercadopagocheckout.service.MercadoPagoService;
+import com.copypoint.api.infra.mercadopago.service.MercadoPagoService;
 import com.mercadopago.exceptions.MPApiException;
 import com.mercadopago.exceptions.MPException;
 import jakarta.validation.Valid;

@@ -1,8 +1,8 @@
-package com.copypoint.api.infra.mercadopagocheckout.controller;
+package com.copypoint.api.infra.mercadopago.controller;
 
 import com.copypoint.api.domain.mercadopagoconfiguration.service.MercadoPagoConfigurationService;
 import com.copypoint.api.domain.payment.Payment;
-import com.copypoint.api.infra.mercadopagocheckout.service.MercadoPagoService;
+import com.copypoint.api.infra.mercadopago.service.MercadoPagoService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

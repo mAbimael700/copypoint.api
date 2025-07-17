@@ -1,13 +1,13 @@
-package com.copypoint.api.infra.mercadopagocheckout.service;
+package com.copypoint.api.infra.mercadopago.service;
 
 import com.copypoint.api.domain.mercadopagoconfiguration.service.MercadoPagoConfigurationService;
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.sale.Sale;
-import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoItemFactory;
-import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoPayerFactory;
-import com.copypoint.api.infra.mercadopagocheckout.factory.MercadoPagoUrlFactory;
+import com.copypoint.api.infra.mercadopago.factory.MercadoPagoItemFactory;
+import com.copypoint.api.infra.mercadopago.factory.MercadoPagoPayerFactory;
+import com.copypoint.api.infra.mercadopago.factory.MercadoPagoUrlFactory;
 import com.mercadopago.client.payment.PaymentClient;
 import com.mercadopago.client.preference.*;
 import com.mercadopago.exceptions.MPApiException;

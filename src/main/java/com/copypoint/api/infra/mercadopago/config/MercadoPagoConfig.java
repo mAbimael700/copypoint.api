@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.mercadopagocheckout.config;
+package com.copypoint.api.infra.mercadopago.config;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;

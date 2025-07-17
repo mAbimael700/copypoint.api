@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.mercadopagocheckout.service;
+package com.copypoint.api.infra.mercadopago.service;
 
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.service.PaymentService;

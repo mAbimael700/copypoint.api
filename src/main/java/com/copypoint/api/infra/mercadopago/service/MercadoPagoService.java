@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.mercadopagocheckout.service;
+package com.copypoint.api.infra.mercadopago.service;
 
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
@@ -6,9 +6,9 @@ import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
 
 
-import com.copypoint.api.infra.mercadopagocheckout.handler.MercadoPagoWebhookHandler;
-import com.copypoint.api.infra.mercadopagocheckout.manager.PaymentStatusManager;
-import com.copypoint.api.infra.mercadopagocheckout.orchestrator.PaymentCreationOrchestrator;
+import com.copypoint.api.infra.mercadopago.handler.MercadoPagoWebhookHandler;
+import com.copypoint.api.infra.mercadopago.manager.PaymentStatusManager;
+import com.copypoint.api.infra.mercadopago.orchestrator.PaymentCreationOrchestrator;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
