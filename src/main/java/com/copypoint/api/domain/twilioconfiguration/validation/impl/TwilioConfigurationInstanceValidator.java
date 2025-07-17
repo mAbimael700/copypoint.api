@@ -4,7 +4,9 @@ import com.copypoint.api.domain.messaging.MessagingProviderConfig;
 import com.copypoint.api.domain.twilioconfiguration.TwilioConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.exceptions.TwilioConfigurationException;
 import com.copypoint.api.domain.twilioconfiguration.validation.TwilioConfigurationValidator;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TwilioConfigurationInstanceValidator implements TwilioConfigurationValidator {
     @Override
     public void valid(MessagingProviderConfig config) throws TwilioConfigurationException {

@@ -1,6 +1,7 @@
 package com.copypoint.api.infra.twilio.config;
 
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,8 @@ public class TwilioProperties {
 
     @Data
     public static class Webhook {
-        private String baseUrl = "https://yourdomain.com";
+        @Value("{app.domain.url}")
+        private String baseUrl;
     }
 
     @Data

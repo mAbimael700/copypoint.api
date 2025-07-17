@@ -9,6 +9,7 @@ import com.copypoint.api.domain.twilioconfiguration.validation.service.TwilioCon
 import com.copypoint.api.infra.security.service.CredentialEncryptionService;
 import com.copypoint.api.infra.twilio.config.TwilioProperties;
 import com.copypoint.api.infra.twilio.factory.TwilioMessageFactory;
+import com.copypoint.api.infra.twilio.factory.TwilioWebhookUrlFactory;
 import com.twilio.Twilio;
 import com.twilio.exception.TwilioException;
 import com.twilio.rest.api.v2010.account.Message;
@@ -26,9 +27,6 @@ import org.springframework.util.StringUtils;
 public class TwilioMessagingService implements MessagingService {
 
     @Autowired
-    private TwilioProperties twilioProperties;
-
-    @Autowired
     private TwilioSdkService sdkService;
 
     @Autowired
@@ -38,10 +36,12 @@ public class TwilioMessagingService implements MessagingService {
     private TwilioConfigurationValidationService validationService;
 
     @Autowired
-    private CredentialEncryptionService encryptionService;
+    private TwilioWebhookUrlFactory webhookUrlFactory;
 
     @Override
-    public boolean sendMessage(String to, String message, MessagingProviderConfig config) {
+    public boolean sendMessage(String to,
+                               String message,
+                               MessagingProviderConfig config) {
 
         try {
             validationService.validateConfiguration(config);
@@ -111,16 +111,17 @@ public class TwilioMessagingService implements MessagingService {
 
         try {
             validationService.validateConfiguration(config);
+
             TwilioConfiguration twilioConfiguration = (TwilioConfiguration) config;
 
             sdkService.initializeTwilio(twilioConfiguration);
 
             // Configurar webhook para mensajes entrantes
-            String webhookUrl = buildWebhookUrl("/webhook/twilio/incoming");
+            String webhookUrl = webhookUrlFactory.buildWebhookUrl("/webhook/twilio/incoming");
 
             // Actualizar la configuración del webhook en la base de datos
             twilioConfiguration.setWebhookUrl(webhookUrl);
-            twilioConfiguration.setStatusCallbackUrl(buildWebhookUrl("/webhook/twilio/status"));
+            twilioConfiguration.setStatusCallbackUrl(webhookUrlFactory.buildWebhookUrl("/webhook/twilio/status"));
 
             log.info("Webhook configured for Twilio. URL: {}", webhookUrl);
 
@@ -132,28 +133,9 @@ public class TwilioMessagingService implements MessagingService {
 
     @Override
     public boolean validateConfiguration(MessagingProviderConfig config) {
-        if (!(config instanceof TwilioConfiguration twilioConfiguration)) {
-            return false;
-        }
-
         try {
-            String accountSid = encryptionService.decryptCredential(twilioConfiguration.getEncryptedAccountSid());
-            String authToken = encryptionService.decryptCredential(twilioConfiguration.getEncryptedAuthToken());
-
-            // Validar que las credenciales no estén vacías
-            if (!StringUtils.hasText(accountSid) || !StringUtils.hasText(authToken)) {
-                return false;
-            }
-
-            // Intentar inicializar Twilio para validar credenciales
-            Twilio.init(accountSid, authToken);
-
-            // Opcional: hacer una llamada de prueba a la API de Twilio
-            // Account account = Account.fetcher().fetch();
-            // return account != null;
-
+            validationService.validateConfiguration(config);
             return true;
-
         } catch (Exception e) {
             log.error("Invalid Twilio configuration", e);
             return false;
@@ -163,11 +145,6 @@ public class TwilioMessagingService implements MessagingService {
     @Override
     public MessagingProviderType getSupportedProviderType() {
         return MessagingProviderType.TWILIO;
-    }
-
-
-    private String buildWebhookUrl(String path) {
-        return twilioProperties.getWebhook().getBaseUrl() + path;
     }
 
     private boolean getMessageStatus(Message twilioMessage) {
