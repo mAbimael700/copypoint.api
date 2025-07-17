@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "messaging_provider_configs")
+@Table(name = "messaging_provider_configurations")
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "provider_type", discriminatorType = DiscriminatorType.STRING)
 @Getter
