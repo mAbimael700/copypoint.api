@@ -11,7 +11,7 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByGatewayId(String paymentId);
 
-    Page<Payment> findByCopypointId(Long copypointId, Pageable pageable);
+    Page<Payment> findBySale_CopypointId(Long copypointId, Pageable pageable);
 
     Page<Payment> findBySaleId(Long saleId, Pageable pageable);
 }
