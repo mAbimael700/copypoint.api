@@ -163,7 +163,7 @@ public class PaymentService {
     }
 
     public Page<Payment> getPaymentsByCopypoint(Long copypointId, Pageable pageable){
-        return paymentRepository.findByCopypointId(copypointId, pageable);
+        return paymentRepository.findBySale_CopypointId(copypointId, pageable);
     }
 
     public Page<Payment> getPaymentsBySale(Long saleId, Pageable pageable){
