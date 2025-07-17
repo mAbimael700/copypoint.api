@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.twilioconfiguration;
 
-import com.copypoint.api.domain.messaging.MessagingProviderConfig;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @EqualsAndHashCode
 @SuperBuilder
-public class TwilioConfiguration extends MessagingProviderConfig {
+public class TwilioConfiguration extends MessagingProviderConfiguration {
     @Column(name = "account_sid", nullable = false, length = 1000)
     private String encryptedAccountSid; // Encriptado con AES
 

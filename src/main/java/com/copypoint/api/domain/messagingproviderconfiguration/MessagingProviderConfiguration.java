@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.messaging;
+package com.copypoint.api.domain.messagingproviderconfiguration;
 
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
 import jakarta.persistence.*;
@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-public abstract class MessagingProviderConfig {
+public abstract class MessagingProviderConfiguration {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

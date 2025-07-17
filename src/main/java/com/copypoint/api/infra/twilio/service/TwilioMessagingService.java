@@ -1,9 +1,9 @@
 package com.copypoint.api.infra.twilio.service;
 
-import com.copypoint.api.domain.messaging.MessagingProviderConfig;
-import com.copypoint.api.domain.messaging.MessagingProviderType;
-import com.copypoint.api.domain.messaging.exceptions.MessagingException;
-import com.copypoint.api.domain.messaging.service.MessagingService;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderType;
+import com.copypoint.api.domain.messagingproviderconfiguration.exceptions.MessagingException;
+import com.copypoint.api.domain.messagingproviderconfiguration.service.MessagingService;
 import com.copypoint.api.domain.twilioconfiguration.TwilioConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.validation.service.TwilioConfigurationValidationService;
 import com.copypoint.api.infra.twilio.factory.TwilioWhatsappMessageFactory;
@@ -37,7 +37,7 @@ public class TwilioMessagingService implements MessagingService {
     @Override
     public boolean sendMessage(String to,
                                String message,
-                               MessagingProviderConfig config) {
+                               MessagingProviderConfiguration config) {
 
         try {
             validationService.validateConfiguration(config);
@@ -71,7 +71,7 @@ public class TwilioMessagingService implements MessagingService {
     public boolean sendMediaMessage(String to,
                                     String mediaUrl,
                                     String caption,
-                                    MessagingProviderConfig config) {
+                                    MessagingProviderConfiguration config) {
         try {
             validationService.validateConfiguration(config);
 
@@ -103,7 +103,7 @@ public class TwilioMessagingService implements MessagingService {
     }
 
     @Override
-    public void configureWebhook(MessagingProviderConfig config) {
+    public void configureWebhook(MessagingProviderConfiguration config) {
 
         try {
             validationService.validateConfiguration(config);
@@ -128,7 +128,7 @@ public class TwilioMessagingService implements MessagingService {
     }
 
     @Override
-    public boolean validateConfiguration(MessagingProviderConfig config) {
+    public boolean validateConfiguration(MessagingProviderConfiguration config) {
         try {
             validationService.validateConfiguration(config);
             return true;

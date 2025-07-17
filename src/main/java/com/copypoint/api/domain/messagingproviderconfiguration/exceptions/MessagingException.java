@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.messaging.exceptions;
+package com.copypoint.api.domain.messagingproviderconfiguration.exceptions;
 
 public class MessagingException extends RuntimeException {
     public MessagingException(String message) {

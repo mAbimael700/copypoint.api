@@ -2,8 +2,8 @@ package com.copypoint.api.domain.customerservicephone;
 
 import com.copypoint.api.domain.conversation.Conversation;
 import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.messaging.MessagingProviderConfig;
-import com.copypoint.api.domain.messaging.MessagingProviderType;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,7 +38,7 @@ public class CustomerServicePhone {
     // Relación con configuración del proveedor
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "messaging_config_id")
-    private MessagingProviderConfig messagingConfig;
+    private MessagingProviderConfiguration messagingConfig;
 
     // Método helper para obtener el tipo de proveedor
     public MessagingProviderType getProviderType() {
