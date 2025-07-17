@@ -10,12 +10,12 @@ import lombok.EqualsAndHashCode;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "twilio_configs")
+@Table(name = "twilio_configurations")
 @DiscriminatorValue("TWILIO")
 @Data
 @EqualsAndHashCode
 @SuperBuilder
-public class TwilioConfig extends MessagingProviderConfig {
+public class TwilioConfiguration extends MessagingProviderConfig {
     @Column(name = "account_sid", nullable = false, length = 1000)
     private String encryptedAccountSid; // Encriptado con AES
 
