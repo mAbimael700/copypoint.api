@@ -12,5 +12,7 @@ public enum MessageStatus {
     PARTIALLY_DELIVERED, // Entregado parcialmente (para mensajes largos)
     REJECTED,            // Rechazado por el proveedor
     SCHEDULED,           // Programado para envío futuro
-    CANCELLED            // Cancelado antes del envío
+    CANCELLED,            // Cancelado antes del
+
+    RECEIVED
 }

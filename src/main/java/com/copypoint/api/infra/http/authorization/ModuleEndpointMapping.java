@@ -34,9 +34,15 @@ public class ModuleEndpointMapping {
                         "PATCH:/api/copypoints/*/sales/*/status",
                         "PATCH:/api/copypoints/*/sales/*/hold",
                         "GET:/api/copypoints/*/services",
-                        "GET:/api/copypoints/*/services/*/profiles"
+                        "GET:/api/copypoints/*/services/*/profiles",
+                        "POST:/api/payments/mercadopago",
+                        "POST:/api/copypoints/*/mercadopago-config"
                 )
         );
+
+        endpoints.put(ModuleType.COPYPOINT_SALES, Arrays.asList(
+                "POST:/api/payments/mercadopago"
+        ));
 
         endpoints.put(ModuleType.STORE_MANAGEMENT, Arrays.asList(
                 "POST:/api/stores/*/services",

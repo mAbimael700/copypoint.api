@@ -15,5 +15,6 @@ public enum PaymentStatus {
     VOIDED,              // Anulado
     REJECTED,            // Rechazado por el banco/procesador
     ON_HOLD,             // En retención por revisión
+    APPROVED,
     REQUIRES_ACTION      // Requiere acción adicional (2FA, etc.)
 }

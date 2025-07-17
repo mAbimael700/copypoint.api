@@ -2,18 +2,23 @@ package com.copypoint.api.domain.conversation;
 
 import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
+import com.copypoint.api.domain.message.Message;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "conversations")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Conversation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +37,8 @@ public class Conversation {
 
     @Column(name = "modified_at")
     private LocalDateTime modifiedAt;
+
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Message> messages = new ArrayList<>();
 }
