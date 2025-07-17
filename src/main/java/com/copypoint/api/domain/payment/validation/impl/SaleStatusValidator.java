@@ -15,7 +15,8 @@ import java.util.Set;
 public class SaleStatusValidator implements PaymentValidator {
     private static final Set<SaleStatus> VALID_STATUSES = Set.of(
             SaleStatus.PAYMENT_PENDING,
-            SaleStatus.PARTIALLY_PAID
+            SaleStatus.PARTIALLY_PAID,
+            SaleStatus.PENDING
     );
 
     @Override

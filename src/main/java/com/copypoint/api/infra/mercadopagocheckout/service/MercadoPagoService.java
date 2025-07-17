@@ -2,7 +2,7 @@ package com.copypoint.api.infra.mercadopagocheckout.service;
 
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
-import com.copypoint.api.domain.payment.dto.PaymentResponse;
+import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
 
 
@@ -52,7 +52,7 @@ public class MercadoPagoService {
     /**
      * Crea un pago delegando al orquestador especializado
      */
-    public PaymentResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
+    public PaymentGatewayResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
         return paymentCreationOrchestrator.createPayment(request);
     }
 

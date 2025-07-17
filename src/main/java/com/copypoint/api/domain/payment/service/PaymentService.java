@@ -14,6 +14,8 @@ import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.sale.repository.SaleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,5 +156,17 @@ public class PaymentService {
         }
 
         return paymentValidationService.validatePayment(saleOpt.get(), paymentRequest);
+    }
+
+    public Page<Payment> getPayments(Pageable pageable) {
+        return paymentRepository.findAll(pageable);
+    }
+
+    public Page<Payment> getPaymentsByCopypoint(Long copypointId, Pageable pageable){
+        return paymentRepository.findByCopypointId(copypointId, pageable);
+    }
+
+    public Page<Payment> getPaymentsBySale(Long saleId, Pageable pageable){
+        return paymentRepository.findBySaleId(saleId, pageable);
     }
 }

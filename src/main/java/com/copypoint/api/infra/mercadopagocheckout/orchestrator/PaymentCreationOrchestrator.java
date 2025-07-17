@@ -3,7 +3,7 @@ package com.copypoint.api.infra.mercadopagocheckout.orchestrator;
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
-import com.copypoint.api.domain.payment.dto.PaymentResponse;
+import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.service.PaymentService;
 import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
@@ -35,7 +35,7 @@ public class PaymentCreationOrchestrator {
     @Autowired
     private PaymentAttemptService paymentAttemptService;
 
-    public PaymentResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
+    public PaymentGatewayResponse createPayment(PaymentRequest request) throws MPException, MPApiException {
         logger.info("Iniciando creación de pago para saleId: {}", request.saleId());
 
         Payment payment = null;
@@ -54,7 +54,7 @@ public class PaymentCreationOrchestrator {
             payment = updatePaymentWithPreferenceData(payment, preference);
             logger.info("Payment actualizado con datos de MercadoPago");
 
-            PaymentResponse response = buildSuccessResponse(preference, payment);
+            PaymentGatewayResponse response = buildSuccessResponse(preference, payment);
             logger.info("Proceso completado exitosamente");
             return response;
 
@@ -122,8 +122,8 @@ public class PaymentCreationOrchestrator {
         }
     }
 
-    private PaymentResponse buildSuccessResponse(Preference preference, Payment payment) {
-        return new PaymentResponse(
+    private PaymentGatewayResponse buildSuccessResponse(Preference preference, Payment payment) {
+        return new PaymentGatewayResponse(
                 true,
                 "Pago creado exitosamente",
                 preference.getInitPoint(),
@@ -133,7 +133,7 @@ public class PaymentCreationOrchestrator {
         );
     }
 
-    private PaymentResponse buildErrorResponse(String errorMessage) {
-        return new PaymentResponse(false, errorMessage, null, null, null, null);
+    private PaymentGatewayResponse buildErrorResponse(String errorMessage) {
+        return new PaymentGatewayResponse(false, errorMessage, null, null, null, null);
     }
 }

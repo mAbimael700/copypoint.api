@@ -1,7 +1,7 @@
 package com.copypoint.api.infra.mercadopagocheckout.controller;
 
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
-import com.copypoint.api.domain.payment.dto.PaymentResponse;
+import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;
 import com.copypoint.api.infra.mercadopagocheckout.service.MercadoPagoService;
 import com.mercadopago.exceptions.MPApiException;
@@ -27,12 +27,12 @@ public class MercadoPagoController {
      * @return PaymentResponse con los datos del pago creado
      */
     @PostMapping
-    public ResponseEntity<PaymentResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
+    public ResponseEntity<PaymentGatewayResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
         try {
-            PaymentResponse response = mercadoPagoService.createPayment(request);
+            PaymentGatewayResponse response = mercadoPagoService.createPayment(request);
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
-            PaymentResponse errorResponse = new PaymentResponse(
+            PaymentGatewayResponse errorResponse = new PaymentGatewayResponse(
                     false,
                     e.getMessage(),
                     null,
@@ -42,7 +42,7 @@ public class MercadoPagoController {
             );
             return ResponseEntity.badRequest().body(errorResponse);
         } catch (MPException | MPApiException e) {
-            PaymentResponse errorResponse = new PaymentResponse(
+            PaymentGatewayResponse errorResponse = new PaymentGatewayResponse(
                     false,
                     "Error al crear el pago: " + e.getMessage(),
                     null,
@@ -52,7 +52,7 @@ public class MercadoPagoController {
             );
             return ResponseEntity.badRequest().body(errorResponse);
         } catch (Exception e) {
-            PaymentResponse errorResponse = new PaymentResponse(
+            PaymentGatewayResponse errorResponse = new PaymentGatewayResponse(
                     false,
                     "Error interno del servidor: " + e.getMessage(),
                     null,
