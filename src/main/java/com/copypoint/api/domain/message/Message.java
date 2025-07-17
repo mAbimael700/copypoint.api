@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,5 +44,39 @@ public class Message {
     @Builder.Default
     private List<String> mediaUrls = new ArrayList<>();
 
+    // Fecha cuando el mensaje fue enviado desde Twilio (fecha oficial del mensaje)
+    @Column(name = "date_sent")
+    private LocalDateTime dateSent;
+
+    // Fecha cuando el mensaje fue entregado al destinatario
+    @Column(name = "date_delivered")
+    private LocalDateTime dateDelivered;
+
+    // Fecha cuando el mensaje fue leído por el destinatario
+    @Column(name = "date_read")
+    private LocalDateTime dateRead;
+
+    // Fecha cuando el mensaje fue creado en nuestro sistema
+    @Column(name = "date_created", nullable = false)
+    @Builder.Default
+    private LocalDateTime dateCreated = LocalDateTime.now();
+
+    // Fecha de la última actualización del mensaje
+    @Column(name = "date_updated")
+    private LocalDateTime dateUpdated;
+
+    // Método para actualizar la fecha de modificación automáticamente
+    @PreUpdate
+    protected void onUpdate() {
+        dateUpdated = LocalDateTime.now();
+    }
+
+    // Método para establecer la fecha de creación automáticamente
+    @PrePersist
+    protected void onCreate() {
+        if (dateCreated == null) {
+            dateCreated = LocalDateTime.now();
+        }
+    }
 
 }
