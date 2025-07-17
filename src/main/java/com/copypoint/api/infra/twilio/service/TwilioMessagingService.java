@@ -6,11 +6,8 @@ import com.copypoint.api.domain.messaging.exceptions.MessagingException;
 import com.copypoint.api.domain.messaging.service.MessagingService;
 import com.copypoint.api.domain.twilioconfiguration.TwilioConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.validation.service.TwilioConfigurationValidationService;
-import com.copypoint.api.infra.security.service.CredentialEncryptionService;
-import com.copypoint.api.infra.twilio.config.TwilioProperties;
-import com.copypoint.api.infra.twilio.factory.TwilioMessageFactory;
+import com.copypoint.api.infra.twilio.factory.TwilioWhatsappMessageFactory;
 import com.copypoint.api.infra.twilio.factory.TwilioWebhookUrlFactory;
-import com.twilio.Twilio;
 import com.twilio.exception.TwilioException;
 import com.twilio.rest.api.v2010.account.Message;
 import com.twilio.rest.api.v2010.account.MessageCreator;
@@ -18,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 
 @Service
@@ -30,7 +26,7 @@ public class TwilioMessagingService implements MessagingService {
     private TwilioSdkService sdkService;
 
     @Autowired
-    private TwilioMessageFactory messageFactory;
+    private TwilioWhatsappMessageFactory messageFactory;
 
     @Autowired
     private TwilioConfigurationValidationService validationService;
