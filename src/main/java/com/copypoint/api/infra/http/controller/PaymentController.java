@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/payments")
@@ -18,9 +15,9 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @GetMapping
+    @GetMapping("/copypoint/copypointId")
     public ResponseEntity<Page<PaymentResponse>> getByCopypoint(
-            @RequestParam Long copypointId,
+            @PathVariable Long copypointId,
             Pageable pageable) {
 
         Page<PaymentResponse> payments = paymentService
@@ -29,9 +26,9 @@ public class PaymentController {
         return ResponseEntity.ok(payments);
     }
 
-    @GetMapping
+    @GetMapping("/sale/saleId")
     public ResponseEntity<Page<PaymentResponse>> getBySale(
-            @RequestParam Long saleId,
+            @PathVariable Long saleId,
             Pageable pageable) {
 
         Page<PaymentResponse> payments = paymentService
@@ -39,7 +36,6 @@ public class PaymentController {
 
         return ResponseEntity.ok(payments);
     }
-
 
 
 }
