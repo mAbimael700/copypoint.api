@@ -32,7 +32,7 @@ public class MercadoPagoGatewayService {
     private MercadoPagoConfigurationService mercadoPagoConfigService;
 
     @Autowired
-    private MercadoPagoGatewayConfigurationService mercadoPagoGatewayConfigurationService;
+    private MercadoPagoSdkConfigurationService mercadoPagoGatewayConfigurationService;
 
     @Autowired
     private MercadoPagoItemFactory itemFactory;

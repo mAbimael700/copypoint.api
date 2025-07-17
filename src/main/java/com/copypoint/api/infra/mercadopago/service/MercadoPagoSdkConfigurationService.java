@@ -12,9 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class MercadoPagoGatewayConfigurationService {
+public class MercadoPagoSdkConfigurationService {
 
-    private static final Logger logger = LoggerFactory.getLogger(MercadoPagoGatewayConfigurationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(MercadoPagoSdkConfigurationService.class);
 
     @Autowired
     private CredentialEncryptionService encryptionService;
