@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.twilioconfiguration.validation.service;
 
 
-import com.copypoint.api.domain.messaging.MessagingProviderConfig;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.validation.TwilioConfigurationValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ public class TwilioConfigurationValidationService {
     /**
      * Ejecuta todas las validaciones registradas
      */
-    public void validateConfiguration(MessagingProviderConfig config) {
+    public void validateConfiguration(MessagingProviderConfiguration config) {
 
         for (TwilioConfigurationValidator validator : validators) {
             validator.valid(config);

@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.messaging;
+package com.copypoint.api.domain.messagingproviderconfiguration;
 
 public enum MessagingProviderType {
     TWILIO,

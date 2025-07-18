@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.twilioconfiguration.validation.impl;
 
-import com.copypoint.api.domain.messaging.MessagingProviderConfig;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.TwilioConfiguration;
 import com.copypoint.api.domain.twilioconfiguration.exceptions.TwilioConfigurationException;
 import com.copypoint.api.domain.twilioconfiguration.validation.TwilioConfigurationValidator;
@@ -17,7 +17,7 @@ public class TwilioConfigurationValidCredentials implements TwilioConfigurationV
     private CredentialEncryptionService encryptionService;
 
     @Override
-    public void valid(MessagingProviderConfig config) throws TwilioConfigurationException {
+    public void valid(MessagingProviderConfiguration config) throws TwilioConfigurationException {
         try {
             TwilioConfiguration twilioConfiguration = (TwilioConfiguration) config;
 
