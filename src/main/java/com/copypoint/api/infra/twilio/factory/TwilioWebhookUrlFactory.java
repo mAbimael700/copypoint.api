@@ -12,7 +12,7 @@ public class TwilioWebhookUrlFactory {
 
 
     public String buildWebhookUrl(String path) {
-        return twilioProperties.getWebhook().getBaseUrl() + path;
+        return twilioProperties.getWebhook().getBaseUrl() + "/webhook/twilio/whatsapp" + path;
     }
 
 }
