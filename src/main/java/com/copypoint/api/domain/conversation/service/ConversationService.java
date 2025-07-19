@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-public class ConversationService {
+public class ConversationService implements IConversationService{
 
     @Autowired
     private ConversationRepository conversationRepository;
@@ -51,5 +51,18 @@ public class ConversationService {
     ) {
         return conversationRepository.existsByCustomerPhoneNumberAndCustomerServicePhoneNumber(
                 customerPhoneNumber, customerServicePhoneNumber);
+    }
+
+    @Override
+    public Conversation findOrCreateConversation(Contact contact, CustomerServicePhone phone) {
+        return conversationRepository.findByCustomerContactAndCustomerServicePhone(contact, phone)
+                .orElseGet(() -> {
+                    Conversation newConversation = Conversation.builder()
+                            .customerContact(contact)
+                            .customerServicePhone(phone)
+                            .createdAt(LocalDateTime.now())
+                            .build();
+                    return conversationRepository.save(newConversation);
+                });
     }
 }

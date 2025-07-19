@@ -1,6 +1,8 @@
 package com.copypoint.api.domain.conversation.repository;
 
+import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.conversation.Conversation;
+import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -45,4 +47,5 @@ public interface ConversationRepository extends JpaRepository<Conversation, Long
 
     long countByCustomerServicePhoneId(Long customerServicePhoneId);
 
+    Optional<Conversation> findByCustomerContactAndCustomerServicePhone(Contact contact, CustomerServicePhone phone);
 }
