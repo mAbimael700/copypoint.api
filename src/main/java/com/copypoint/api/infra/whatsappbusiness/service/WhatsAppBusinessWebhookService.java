@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.client;
+package com.copypoint.api.infra.whatsappbusiness.service;
 
 import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.conversation.Conversation;
@@ -10,6 +10,7 @@ import com.copypoint.api.domain.message.MessageStatus;
 import com.copypoint.api.domain.message.service.MessageService;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.*;
+import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
