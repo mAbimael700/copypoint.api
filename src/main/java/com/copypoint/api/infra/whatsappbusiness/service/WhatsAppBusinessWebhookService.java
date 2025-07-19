@@ -1,6 +1,7 @@
 package com.copypoint.api.infra.whatsappbusiness.service;
 
 import com.copypoint.api.domain.contact.Contact;
+import com.copypoint.api.domain.contact.service.ContactService;
 import com.copypoint.api.domain.conversation.Conversation;
 import com.copypoint.api.domain.conversation.service.ConversationService;
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
