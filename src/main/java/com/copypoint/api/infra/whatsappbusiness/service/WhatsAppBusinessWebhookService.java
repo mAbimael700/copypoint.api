@@ -5,7 +5,7 @@ import com.copypoint.api.domain.contact.service.ContactService;
 import com.copypoint.api.domain.conversation.Conversation;
 import com.copypoint.api.domain.conversation.service.ConversationService;
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
-import com.copypoint.api.domain.customerservicephone.service.CustomerServicePhoneServiceService;
+import com.copypoint.api.domain.customerservicephone.service.CustomerServicePhoneService;
 import com.copypoint.api.domain.message.Message;
 import com.copypoint.api.domain.message.MessageDirection;
 import com.copypoint.api.domain.message.MessageStatus;
@@ -28,7 +28,7 @@ public class WhatsAppBusinessWebhookService {
     private static final Logger logger = LoggerFactory.getLogger(WhatsAppBusinessWebhookService.class);
 
     @Autowired
-    private CustomerServicePhoneServiceService customerServicePhoneService;
+    private CustomerServicePhoneService customerServicePhoneService;
 
     @Autowired
     private ContactService contactService;
