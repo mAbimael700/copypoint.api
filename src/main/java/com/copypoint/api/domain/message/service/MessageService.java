@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MessageService {
+public class MessageService implements IMessageService {
 
     @Autowired
     private MessageRepository messageRepository;
@@ -67,5 +67,15 @@ public class MessageService {
                 .build();
 
         return messageRepository.save(newMessage);
+    }
+
+    @Override
+    public Message save(Message message) {
+        return messageRepository.save(message);
+    }
+
+    @Override
+    public Message findByMessageSid(String messageSid) {
+        return messageRepository.findByMessageSid(messageSid);
     }
 }
