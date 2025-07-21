@@ -32,8 +32,8 @@ public class SecurityConfiguration {
     @Autowired
     private AuthenticationFilter authenticationFilter;
 
-    @Autowired
-    private AuthorizationFilter authorizationFilter;
+   /* @Autowired
+    private AuthorizationFilter authorizationFilter;*/
 
     @Autowired
     private AuthenticationService authenticationService;
@@ -55,7 +55,7 @@ public class SecurityConfiguration {
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(authorizationFilter, AuthenticationFilter.class)
+                //.addFilterAfter(authorizationFilter, AuthenticationFilter.class)
                 .build();
     }
 

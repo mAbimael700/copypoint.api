@@ -1,7 +1,7 @@
 package com.copypoint.api.infra.whatsappbusiness.client;
 
-import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppSendMessageRequestDTO;
-import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppSendMessageResponseDTO;
+import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageRequestDTO;
+import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageResponseDTO;
 import com.copypoint.api.infra.security.service.CredentialEncryptionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

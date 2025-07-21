@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.whatsappbussinessconfiguration.dto;
+package com.copypoint.api.infra.whatsappbusiness.dto.response;
 
 import java.util.List;
 

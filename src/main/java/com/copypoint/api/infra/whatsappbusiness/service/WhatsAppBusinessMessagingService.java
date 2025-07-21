@@ -4,8 +4,8 @@ import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProvider
 import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderType;
 import com.copypoint.api.domain.messagingproviderconfiguration.service.MessagingService;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
-import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppSendMessageRequestDTO;
-import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppSendMessageResponseDTO;
+import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageRequestDTO;
+import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageResponseDTO;
 import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

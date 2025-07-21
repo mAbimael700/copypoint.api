@@ -18,7 +18,7 @@ public class Permission {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("roleId")
-    @JoinColumn(name = "rol_id", referencedColumnName = "id")
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.whatsappbusiness.controller;
 
-import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppWebhookDTO;
+import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppWebhookDTO;
 import com.copypoint.api.infra.whatsappbusiness.service.WhatsAppBusinessWebhookService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
