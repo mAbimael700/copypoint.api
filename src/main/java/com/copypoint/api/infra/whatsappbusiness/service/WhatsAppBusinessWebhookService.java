@@ -82,9 +82,17 @@ public class WhatsAppBusinessWebhookService {
     }
 
     public void processIncomingMessage(Long customerServicePhoneId, WhatsAppWebhookDTO webhookData, String signature) {
-        CustomerServicePhone phone = customerServicePhoneService.getById(customerServicePhoneId);
-        if (phone == null || !(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
-            throw new IllegalArgumentException("Configuración de WhatsApp no encontrada");
+
+        Optional<CustomerServicePhone> phoneOpt = customerServicePhoneService.getByIdWithMessagingConfig(customerServicePhoneId);
+
+        if (phoneOpt.isEmpty()) {
+            throw new IllegalArgumentException("No se encontró el teléfono con ID: " + customerServicePhoneId);
+        }
+
+        CustomerServicePhone phone = phoneOpt.get();
+
+        if (!(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
+            throw new IllegalArgumentException("La configuración no es de tipo WhatsApp Business para el teléfono: " + customerServicePhoneId);
         }
 
         // Verificar firma del webhook (opcional pero recomendado para seguridad)
