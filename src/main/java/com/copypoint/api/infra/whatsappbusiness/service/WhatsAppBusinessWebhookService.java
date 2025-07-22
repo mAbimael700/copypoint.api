@@ -144,12 +144,14 @@ public class WhatsAppBusinessWebhookService {
                 mediaUrls.add(downloadAndStoreMedia(messageDto.document().id(), phone));
             }
 
+
             // Crear mensaje
             Message message = Message.builder()
                     .messageSid(messageDto.id())
                     .direction(MessageDirection.INBOUND)
                     .status(MessageStatus.RECEIVED)
                     .conversation(conversation)
+                    .body(messageDto.text().body())
                     .mediaUrls(mediaUrls)
                     .dateSent(messageDto.getTimestampAsInstant() != null ?
                             LocalDateTime.ofInstant(messageDto.getTimestampAsInstant(), ZoneId.systemDefault()) : null)

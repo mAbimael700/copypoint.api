@@ -31,6 +31,9 @@ public class Message {
     @Enumerated(EnumType.STRING)
     private MessageStatus status;
 
+    @Column(length = 1000)
+    private String body;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
