@@ -28,7 +28,7 @@ public class WhatsAppBusinessConfigurationService {
     public WhatsAppBusinessConfiguration createConfiguration(Long phoneId,
                                                              WhatsAppConfigurationDTO dto) {
 
-        CustomerServicePhone phone = customerServicePhoneService.findById(phoneId);
+        CustomerServicePhone phone = customerServicePhoneService.getById(phoneId);
 
         if (phone == null) {
             throw new RuntimeException("No existe una configuración con ese número registrado");
@@ -99,7 +99,7 @@ public class WhatsAppBusinessConfigurationService {
     }
 
     public void deleteConfiguration(Long phoneId) {
-        CustomerServicePhone phone = customerServicePhoneService.findById(phoneId);
+        CustomerServicePhone phone = customerServicePhoneService.getById(phoneId);
 
         if (phone == null) {
             throw new RuntimeException("Customer phone service not found");
@@ -138,7 +138,7 @@ public class WhatsAppBusinessConfigurationService {
     }
 
     public WhatsAppBusinessConfiguration getByCustomerServicePhoneId(Long phoneId) {
-        CustomerServicePhone phone = customerServicePhoneService.findById(phoneId);
+        CustomerServicePhone phone = customerServicePhoneService.getById(phoneId);
 
         if (phone == null) {
             throw new RuntimeException("Customer service phone not found");

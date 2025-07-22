@@ -44,7 +44,7 @@ public class WhatsAppBusinessWebhookService {
 
     public boolean verifyWebhookToken(Long customerServicePhoneId, String verifyToken) {
         try {
-            CustomerServicePhone phone = customerServicePhoneService.findById(customerServicePhoneId);
+            CustomerServicePhone phone = customerServicePhoneService.getById(customerServicePhoneId);
             if (phone == null || !(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
                 return false;
             }
@@ -57,7 +57,7 @@ public class WhatsAppBusinessWebhookService {
     }
 
     public void processIncomingMessage(Long customerServicePhoneId, WhatsAppWebhookDTO webhookData, String signature) {
-        CustomerServicePhone phone = customerServicePhoneService.findById(customerServicePhoneId);
+        CustomerServicePhone phone = customerServicePhoneService.getById(customerServicePhoneId);
         if (phone == null || !(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
             throw new IllegalArgumentException("Configuración de WhatsApp no encontrada");
         }
