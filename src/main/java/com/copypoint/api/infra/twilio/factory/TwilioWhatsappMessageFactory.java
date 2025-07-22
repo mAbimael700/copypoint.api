@@ -28,7 +28,7 @@ public class TwilioWhatsappMessageFactory {
                         message
                 )
                 .setStatusCallback(URI.create(webhookUrlFactory
-                        .buildWebhookUrl("/webhook/twilio/whatsapp/status")));
+                        .buildWebhookUrl("/status")));
     }
 
     public MessageCreator createMediaMessage(String to,
@@ -48,7 +48,7 @@ public class TwilioWhatsappMessageFactory {
                 )
                 .setMediaUrl(mediaUris)
                 .setStatusCallback(URI.create(webhookUrlFactory
-                        .buildWebhookUrl("/webhook/twilio/whatsapp/status")));
+                        .buildWebhookUrl("/status")));
     }
 
 
@@ -73,7 +73,7 @@ public class TwilioWhatsappMessageFactory {
 
         return creator.setStatusCallback(
                 URI.create(webhookUrlFactory
-                        .buildWebhookUrl("/webhook/twilio/whatsapp/status")));
+                        .buildWebhookUrl("/status")));
     }
 
     private String formatWhatsappPhoneNumber(String phoneNumber) {

@@ -31,7 +31,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         m.active as moduleActive
     FROM employee_roles er
     JOIN roles r ON er.role_id = r.id
-    JOIN permissions p ON p.rol_id = r.id
+    JOIN permissions p ON p.role_id = r.id
     JOIN modules m ON p.module_id = m.id
     JOIN employees e ON er.employee_id = e.id
     WHERE e.user_id = :userId

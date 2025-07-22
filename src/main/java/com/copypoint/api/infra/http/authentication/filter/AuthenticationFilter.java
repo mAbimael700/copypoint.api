@@ -25,7 +25,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private UserRepository userRepository;
 
-
     @Autowired
     private PermissionService permissionService;
 

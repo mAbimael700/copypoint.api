@@ -14,4 +14,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE m.conversation.id = :conversationId ORDER BY m.dateSent ASC")
     Page<Message> findByConversationIdOrderByDateSent(@Param("conversationId") Long conversationId, Pageable pageable);
+
+    Message findByMessageSid(String messageSid);
 }
