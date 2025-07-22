@@ -38,44 +38,6 @@ public class MercadoPagoConfigurationService {
         return mercadoPagoConfigRepository.findActiveByCopypointId(copypointId);
     }
 
-    /**
-     * Configura MercadoPago SDK con el token correcto para la sale
-     */
-    public boolean configureForSale(Sale sale) {
-        try {
-            Optional<MercadoPagoConfiguration> configOpt = getConfigForSale(sale);
-
-            if (configOpt.isPresent()) {
-                MercadoPagoConfiguration config = configOpt.get();
-
-                String accessToken = getDecryptedAccessToken(config);
-
-                if (accessToken != null) {
-                    com.mercadopago.MercadoPagoConfig.setAccessToken(accessToken);
-
-                    if (config.getIsSandbox() != null && config.getIsSandbox()) {
-                        System.setProperty("mercadopago.sandbox", "true");
-                    } else {
-                        System.setProperty("mercadopago.sandbox", "false");
-                    }
-
-                    logger.info("MercadoPago SDK configurado exitosamente para copypoint: {}",
-                            sale.getCopypoint().getId());
-                    return true;
-                } else {
-                    logger.error("No se pudo obtener el access token para copypoint: {}",
-                            sale.getCopypoint().getId());
-                }
-            } else {
-                logger.warn("No se encontró configuración de MercadoPago para copypoint: {}",
-                        sale.getCopypoint().getId());
-            }
-            return false;
-        } catch (Exception e) {
-            logger.error("Error al configurar MercadoPago SDK: {}", e.getMessage());
-            return false;
-        }
-    }
 
     /**
      * Obtiene el email del vendedor para la sale
