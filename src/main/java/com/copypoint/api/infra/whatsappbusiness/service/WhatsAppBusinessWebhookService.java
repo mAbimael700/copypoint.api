@@ -10,6 +10,7 @@ import com.copypoint.api.domain.message.Message;
 import com.copypoint.api.domain.message.MessageDirection;
 import com.copypoint.api.domain.message.MessageStatus;
 import com.copypoint.api.domain.message.service.MessageService;
+import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
 import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.*;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class WhatsAppBusinessWebhookService {
@@ -42,16 +44,39 @@ public class WhatsAppBusinessWebhookService {
     @Autowired
     private WhatsAppBusinessClient whatsAppClient;
 
+    // Luego modificar el método verifyWebhookToken en WhatsAppBusinessWebhookService:
     public boolean verifyWebhookToken(Long customerServicePhoneId, String verifyToken) {
         try {
-            CustomerServicePhone phone = customerServicePhoneService.getById(customerServicePhoneId);
-            if (phone == null || !(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
+            Optional<CustomerServicePhone> phoneOpt = customerServicePhoneService.getByIdWithMessagingConfig(customerServicePhoneId);
+
+            if (phoneOpt.isEmpty()) {
+                logger.debug("No se encontró el teléfono con ID: {}", customerServicePhoneId);
                 return false;
             }
 
-            return config.getWebhookVerifyToken().equals(verifyToken);
+            CustomerServicePhone phone = phoneOpt.get();
+
+            MessagingProviderConfiguration config = phone.getMessagingConfig();
+            if (config == null) {
+                logger.debug("No hay configuración de mensajería para el teléfono: {}", customerServicePhoneId);
+                return false;
+            }
+
+            if (!(config instanceof WhatsAppBusinessConfiguration)) {
+                logger.debug("La configuración no es de tipo WhatsApp Business para el teléfono: {}", customerServicePhoneId);
+                return false;
+            }
+
+            WhatsAppBusinessConfiguration whatsAppConfig = (WhatsAppBusinessConfiguration) config;
+            boolean isValid = whatsAppConfig.getWebhookVerifyToken().equals(verifyToken);
+
+            logger.debug("Validación de token para teléfono {}: esperado={}, recibido={}, válido={}",
+                    customerServicePhoneId, whatsAppConfig.getWebhookVerifyToken(), verifyToken, isValid);
+
+            return isValid;
+
         } catch (Exception e) {
-            logger.error("Error verificando token de webhook: {}", e.getMessage(), e);
+            logger.error("Error verificando token de webhook para teléfono {}: {}", customerServicePhoneId, e.getMessage(), e);
             return false;
         }
     }

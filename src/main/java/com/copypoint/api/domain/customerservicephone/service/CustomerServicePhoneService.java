@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -78,5 +79,9 @@ public class CustomerServicePhoneService implements ICustomerServicePhoneService
                 .setPhoneNumber(updateDTO.phoneNumber());
 
         return customerServicePhoneRepository.save(customerServicePhoneOptional.get());
+    }
+    @Transactional(readOnly = true)
+    public Optional<CustomerServicePhone> getByIdWithMessagingConfig(Long id) {
+        return customerServicePhoneRepository.findByIdWithMessagingConfig(id);
     }
 }
