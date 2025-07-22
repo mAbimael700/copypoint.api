@@ -54,7 +54,10 @@ public class PermissionService {
     }
 
     @Transactional(readOnly = true)
-    private boolean checkContextualPermissionWithTransaction(User user, ModuleType moduleName, PathContext pathContext) {
+    private boolean checkContextualPermissionWithTransaction(
+            User user,
+            ModuleType moduleName,
+            PathContext pathContext) {
         List<EmployeeRolePermissionProjection> rolePermissions =
                 employeeRepository.findEmployeeRolePermissionsByUser(user.getId());
 
@@ -137,10 +140,14 @@ public class PermissionService {
             this.roles = roles;
         }
 
-        public Set<String> getModules() { return modules; }
-        public Set<String> getRoles() { return roles; }
-    }
+        public Set<String> getModules() {
+            return modules;
+        }
 
+        public Set<String> getRoles() {
+            return roles;
+        }
+    }
 
 
     /**
@@ -234,14 +241,31 @@ public class PermissionService {
         }
 
         // Getters
-        public Long getCopypointId() { return copypointId; }
-        public Set<String> getRoles() { return roles; }
-        public Set<String> getModules() { return modules; }
-        public boolean hasAccess() { return hasAccess; }
+        public Long getCopypointId() {
+            return copypointId;
+        }
+
+        public Set<String> getRoles() {
+            return roles;
+        }
+
+        public Set<String> getModules() {
+            return modules;
+        }
+
+        public boolean hasAccess() {
+            return hasAccess;
+        }
 
         // Métodos de conveniencia
-        public boolean hasRole(String roleName) { return roles.contains(roleName); }
-        public boolean hasModule(String moduleName) { return modules.contains(moduleName); }
+        public boolean hasRole(String roleName) {
+            return roles.contains(roleName);
+        }
+
+        public boolean hasModule(String moduleName) {
+            return modules.contains(moduleName);
+        }
+
         public boolean hasAnyRole(String... roleNames) {
             return roles.stream().anyMatch(role -> Arrays.asList(roleNames).contains(role));
         }

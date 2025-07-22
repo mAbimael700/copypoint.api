@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.POST, "/api/auth/sign-in").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/auth/sign-up").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/webhook/whatsapp/4").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/webhook/whatsapp/*").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()
                 )
