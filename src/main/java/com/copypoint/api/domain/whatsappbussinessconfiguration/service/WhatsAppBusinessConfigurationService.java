@@ -6,6 +6,7 @@ import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessC
 import com.copypoint.api.domain.whatsappbussinessconfiguration.repository.WhatsAppBusinessConfigurationRepository;
 import com.copypoint.api.infra.security.service.CredentialEncryptionService;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppConfigurationDTO;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,5 +153,184 @@ public class WhatsAppBusinessConfigurationService {
         }
 
         return configuration;
+    }
+
+    /**
+     * Renueva únicamente el access token de una configuración existente
+     *
+     * @param configId       ID de la configuración
+     * @param newAccessToken Nuevo access token
+     * @return Configuración actualizada
+     */
+    public WhatsAppBusinessConfiguration renewAccessToken(Long configId, String newAccessToken) {
+        Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
+
+        if (configurationOpt.isEmpty()) {
+            throw new RuntimeException("Configuración de WhatsApp no encontrada");
+        }
+
+        WhatsAppBusinessConfiguration configuration = configurationOpt.get();
+
+        // Validar que el nuevo token no esté vacío
+        if (newAccessToken == null || newAccessToken.trim().isEmpty()) {
+            throw new RuntimeException("El access token no puede estar vacío");
+        }
+
+        // Encriptar y actualizar el access token
+        configuration.setAccessTokenEncrypted(encryptionService.encryptCredential(newAccessToken));
+
+        return repository.save(configuration);
+    }
+
+    /**
+     * Renueva el access token usando el phoneId (más común en la práctica)
+     *
+     * @param phoneId        ID del teléfono de servicio al cliente
+     * @param newAccessToken Nuevo access token
+     * @return Configuración actualizada
+     */
+    public WhatsAppBusinessConfiguration renewAccessTokenByPhone(Long phoneId, String newAccessToken) {
+        CustomerServicePhone phone = customerServicePhoneService.getById(phoneId);
+
+        if (phone == null) {
+            throw new RuntimeException("Teléfono de servicio no encontrado");
+        }
+
+        WhatsAppBusinessConfiguration configuration = (WhatsAppBusinessConfiguration) phone.getMessagingConfig();
+
+        if (configuration == null) {
+            throw new RuntimeException("No existe configuración de WhatsApp para este teléfono");
+        }
+
+        return renewAccessToken(configuration.getId(), newAccessToken);
+    }
+
+    /**
+     * Renueva los datos críticos que pueden cambiar con frecuencia
+     *
+     * @param configId              ID de la configuración
+     * @param newAccessToken        Nuevo access token (requerido)
+     * @param newWebhookVerifyToken Nuevo webhook verify token (opcional)
+     * @param newAppSecret          Nuevo app secret (opcional)
+     * @return Configuración actualizada
+     */
+    public WhatsAppBusinessConfiguration renewCriticalCredentials(Long configId,
+                                                                  String newAccessToken,
+                                                                  String newWebhookVerifyToken,
+                                                                  String newAppSecret) {
+        Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
+
+        if (configurationOpt.isEmpty()) {
+            throw new RuntimeException("Configuración de WhatsApp no encontrada");
+        }
+
+        WhatsAppBusinessConfiguration configuration = configurationOpt.get();
+
+        // Access token es obligatorio
+        if (newAccessToken == null || newAccessToken.trim().isEmpty()) {
+            throw new RuntimeException("El access token es requerido");
+        }
+
+        // Actualizar access token
+        configuration.setAccessTokenEncrypted(encryptionService.encryptCredential(newAccessToken));
+
+        // Actualizar webhook verify token si se proporciona
+        if (newWebhookVerifyToken != null && !newWebhookVerifyToken.trim().isEmpty()) {
+            configuration.setWebhookVerifyToken(newWebhookVerifyToken);
+        }
+
+        // Actualizar app secret si se proporciona
+        if (newAppSecret != null && !newAppSecret.trim().isEmpty()) {
+            configuration.setAppSecretEncrypted(encryptionService.encryptCredential(newAppSecret));
+        }
+
+        return repository.save(configuration);
+    }
+
+    /**
+     * Renueva únicamente el webhook verify token
+     *
+     * @param configId              ID de la configuración
+     * @param newWebhookVerifyToken Nuevo webhook verify token
+     * @return Configuración actualizada
+     */
+    public WhatsAppBusinessConfiguration renewWebhookVerifyToken(Long configId, String newWebhookVerifyToken) {
+        Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
+
+        if (configurationOpt.isEmpty()) {
+            throw new RuntimeException("Configuración de WhatsApp no encontrada");
+        }
+
+        WhatsAppBusinessConfiguration configuration = configurationOpt.get();
+
+        if (newWebhookVerifyToken == null || newWebhookVerifyToken.trim().isEmpty()) {
+            throw new RuntimeException("El webhook verify token no puede estar vacío");
+        }
+
+        configuration.setWebhookVerifyToken(newWebhookVerifyToken);
+
+        return repository.save(configuration);
+    }
+
+    /**
+     * Método para verificar si la configuración necesita renovación
+     * (útil para sistemas automatizados de renovación)
+     *
+     * @param configId ID de la configuración
+     * @return true si la configuración es válida y activa
+     */
+    public boolean isConfigurationHealthy(Long configId) {
+        Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
+
+        if (configurationOpt.isEmpty()) {
+            return false;
+        }
+
+        WhatsAppBusinessConfiguration configuration = configurationOpt.get();
+
+        return configuration.isConfigurationValid() &&
+                configuration.getIsActive() != null &&
+                configuration.getIsActive();
+    }
+
+    /**
+     * Obtiene información básica de la configuración sin datos sensibles
+     * (útil para validaciones previas a renovaciones)
+     *
+     * @param configId ID de la configuración
+     * @return Información básica de la configuración
+     */
+    public ConfigurationSummary getConfigurationSummary(Long configId) {
+        Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
+
+        if (configurationOpt.isEmpty()) {
+            throw new RuntimeException("Configuración de WhatsApp no encontrada");
+        }
+
+        WhatsAppBusinessConfiguration config = configurationOpt.get();
+
+        return new ConfigurationSummary(
+                config.getId(),
+                config.getPhoneNumberId(),
+                config.getBusinessAccountId(),
+                config.getAppId(),
+                config.getDisplayName(),
+                config.getIsActive(),
+                config.isConfigurationValid()
+        );
+    }
+
+    /**
+     * Clase auxiliar para el resumen de configuración
+     */
+    public record ConfigurationSummary(
+            Long id,
+            String phoneNumberId,
+            String businessAccountId,
+            String appId,
+            String displayName,
+            Boolean isActive,
+            boolean isValid
+    ) {
     }
 }

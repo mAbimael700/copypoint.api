@@ -46,7 +46,7 @@ public class WhatsAppBusinessConfigurationController {
     @PutMapping("/{configId}")
     public ResponseEntity<?> updateConfiguration(
             @PathVariable Long configId,
-            @Valid @RequestBody WhatsAppConfigurationDTO configurationDTO) {
+             @RequestBody WhatsAppConfigurationDTO configurationDTO) {
 
         try {
 

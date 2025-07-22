@@ -129,10 +129,20 @@ public class WhatsAppBusinessWebhookService {
             // Buscar o crear conversación
             Conversation conversation = conversationService.findOrCreateConversation(contact, phone);
 
+            String bodyText = "";
+
+            if (messageDto.text() != null) {
+                bodyText = messageDto.text().body();
+            }
+
             // Preparar URLs de media si existen
             List<String> mediaUrls = new ArrayList<>();
             if (messageDto.image() != null) {
                 mediaUrls.add(downloadAndStoreMedia(messageDto.image().id(), phone));
+
+                if (messageDto.image().caption() != null) {
+                    bodyText = messageDto.image().caption();
+                }
             }
             if (messageDto.video() != null) {
                 mediaUrls.add(downloadAndStoreMedia(messageDto.video().id(), phone));
@@ -151,7 +161,7 @@ public class WhatsAppBusinessWebhookService {
                     .direction(MessageDirection.INBOUND)
                     .status(MessageStatus.RECEIVED)
                     .conversation(conversation)
-                    .body(messageDto.text().body())
+                    .body(bodyText)
                     .mediaUrls(mediaUrls)
                     .dateSent(messageDto.getTimestampAsInstant() != null ?
                             LocalDateTime.ofInstant(messageDto.getTimestampAsInstant(), ZoneId.systemDefault()) : null)
