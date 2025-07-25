@@ -57,17 +57,17 @@ public class WhatsAppBusinessWebhookService {
             CustomerServicePhone phone = phoneOpt.get();
 
             MessagingProviderConfiguration config = phone.getMessagingConfig();
+
             if (config == null) {
                 logger.debug("No hay configuración de mensajería para el teléfono: {}", customerServicePhoneId);
                 return false;
             }
 
-            if (!(config instanceof WhatsAppBusinessConfiguration)) {
+            if (!(config instanceof WhatsAppBusinessConfiguration whatsAppConfig)) {
                 logger.debug("La configuración no es de tipo WhatsApp Business para el teléfono: {}", customerServicePhoneId);
                 return false;
             }
 
-            WhatsAppBusinessConfiguration whatsAppConfig = (WhatsAppBusinessConfiguration) config;
             boolean isValid = whatsAppConfig.getWebhookVerifyToken().equals(verifyToken);
 
             logger.debug("Validación de token para teléfono {}: esperado={}, recibido={}, válido={}",

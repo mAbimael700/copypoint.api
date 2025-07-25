@@ -218,6 +218,11 @@ public class WhatsAppBusinessConfigurationService {
                                                                   String newAccessToken,
                                                                   String newWebhookVerifyToken,
                                                                   String newAppSecret) {
+        // Access token es obligatorio
+        if (newAccessToken == null || newAccessToken.trim().isEmpty()) {
+            throw new RuntimeException("El access token es requerido");
+        }
+
         Optional<WhatsAppBusinessConfiguration> configurationOpt = repository.findById(configId);
 
         if (configurationOpt.isEmpty()) {
@@ -225,11 +230,6 @@ public class WhatsAppBusinessConfigurationService {
         }
 
         WhatsAppBusinessConfiguration configuration = configurationOpt.get();
-
-        // Access token es obligatorio
-        if (newAccessToken == null || newAccessToken.trim().isEmpty()) {
-            throw new RuntimeException("El access token es requerido");
-        }
 
         // Actualizar access token
         configuration.setAccessTokenEncrypted(encryptionService.encryptCredential(newAccessToken));
