@@ -131,7 +131,9 @@ public class WhatsAppBusinessWebhookService {
         }
     }
 
-    private void processIncomingMessageDto(CustomerServicePhone phone, WhatsAppMessageDTO messageDto, List<WhatsAppContactDTO> contacts) {
+    private void processIncomingMessageDto(CustomerServicePhone phone,
+                                           WhatsAppMessageDTO messageDto,
+                                           List<WhatsAppContactDTO> contacts) {
         try {
             // Buscar o crear contacto
             Contact contact = findOrCreateContact(messageDto.from(), contacts);
@@ -152,7 +154,6 @@ public class WhatsAppBusinessWebhookService {
                     .status(MessageStatus.RECEIVED)
                     .conversation(conversation)
                     .body(bodyText)
-                    .mediaUrls(new ArrayList<>()) // Inicializar vacío
                     .dateSent(messageDto.getTimestampAsInstant() != null ?
                             LocalDateTime.ofInstant(messageDto.getTimestampAsInstant(), ZoneId.systemDefault()) : null)
                     .build();
@@ -220,17 +221,24 @@ public class WhatsAppBusinessWebhookService {
 
                 if (messageDto.document() != null) {
                     String originalName = messageDto.document().filename();
-                    if (originalName == null) {
+                    if (originalName == null || originalName.isBlank()) {
+                        originalName = messageDto.document().caption();
+                    }
+                    if (originalName == null || originalName.isBlank()) {
                         originalName = "document_" + messageDto.document().id();
                     }
 
-                    // Detectar tipo de archivo basado en el nombre
                     AttachmentFileType fileType = attachmentService.detectFileType(
                             originalName, messageDto.document().mimeType());
 
                     Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
                             messageDto.document().id(), phone, message,
                             originalName, fileType);
+
+                    // Usar el caption como cuerpo si no hay texto
+                    if (messageDto.document().caption() != null && bodyText.isEmpty()) {
+                        bodyText = messageDto.document().caption();
+                    }
                 }
 
             } catch (Exception mediaException) {
