@@ -67,7 +67,7 @@ public class WhatsAppMediaService {
             if (downloadMediaSync(mediaId, phone, r2Key, attachment)) {
                 logger.info("Media descargado síncronamente: {}", mediaId);
                 return attachment;
-                ;
+
             }
         } catch (Exception e) {
             logger.warn("Descarga síncrona falló para media {}, programando descarga asíncrona: {}",
@@ -75,7 +75,7 @@ public class WhatsAppMediaService {
         }
 
         // Si falla la descarga síncrona, programar descarga asíncrona
-        downloadMediaAsync(mediaId, phone, r2Key, message);
+        downloadMediaAsync(mediaId, phone, r2Key, attachment);
 
         // Retornar URL aunque la descarga esté pendiente
         return attachment;
