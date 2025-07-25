@@ -1,8 +1,7 @@
-package com.copypoint.api.infra.http.security;
+package com.copypoint.api.infra.http.security.config;
 
 import com.copypoint.api.infra.http.authentication.filter.AuthenticationFilter;
 import com.copypoint.api.infra.http.authentication.service.AuthenticationService;
-import com.copypoint.api.infra.http.authorization.filter.AuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +14,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -32,17 +32,21 @@ public class SecurityConfiguration {
     @Autowired
     private AuthenticationFilter authenticationFilter;
 
-   /* @Autowired
-    private AuthorizationFilter authorizationFilter;*/
+    /* @Autowired
+    private AuthorizationFilter authorizationFilter;
+    */
 
     @Autowired
     private AuthenticationService authenticationService;
+
+    @Autowired
+    private CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
 
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usar la configuración CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource)) // Usar la configuración CORS
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Le indiamos a Spring el tipo de sesion
                 .authorizeHttpRequests((auth) ->
@@ -55,7 +59,7 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()
                 )
-                .authenticationProvider(authenticationProvider())
+                .userDetailsService(userDetailsService())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 //.addFilterAfter(authorizationFilter, AuthenticationFilter.class)
                 .build();
@@ -72,49 +76,10 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
+    // Método moderno: exponer AuthenticationService como UserDetailsService
     @Bean
-    public DaoAuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(authenticationService);
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
+    public UserDetailsService userDetailsService() {
+        return authenticationService;
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-
-        // Orígenes permitidos (URLs de tu frontend)
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:3000",    // React dev server
-                "http://localhost:5173",    // Vite dev server
-                "http://localhost:4173",    // Vite preview
-                "https://tu-dominio.com"    // Producción
-        ));
-
-        // Métodos HTTP permitidos
-        configuration.setAllowedMethods(Arrays.asList(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
-        ));
-
-        // Headers permitidos
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-
-        // Permitir credenciales (cookies, authorization headers)
-        configuration.setAllowCredentials(true);
-
-        // Headers que el cliente puede acceder
-        configuration.setExposedHeaders(Arrays.asList(
-                "Authorization",
-                "Content-Type",
-                "X-Total-Count"
-        ));
-
-        // Tiempo de caché para preflight requests
-        configuration.setMaxAge(3600L);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 }
