@@ -49,8 +49,8 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                     PermissionService.UserPermissionInfo permissionInfo =
                             permissionService.getUserPermissionInfo(user);
                     // Crear UserPrincipal con permisos completos
-                    var userPrincipal = new UserPrincipal(user,
-                            permissionInfo.getModules(), permissionInfo.getRoles());
+                    UserPrincipal userPrincipal = new UserPrincipal(user,
+                            permissionInfo.modules(), permissionInfo.roles());
 
                     var authentication = new UsernamePasswordAuthenticationToken(
                             userPrincipal,

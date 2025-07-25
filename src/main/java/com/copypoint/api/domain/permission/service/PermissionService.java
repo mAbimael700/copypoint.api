@@ -8,6 +8,7 @@ import com.copypoint.api.domain.pathcontext.PathContext;
 import com.copypoint.api.domain.user.User;
 import com.copypoint.api.infra.http.authorization.ModuleEndpointMapping;
 import com.copypoint.api.infra.http.userprincipal.UserPrincipal;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -131,22 +132,8 @@ public class PermissionService {
     }
 
     // Clase interna para encapsular la información de permisos
-    public static class UserPermissionInfo {
-        private final Set<String> modules;
-        private final Set<String> roles;
+        public record UserPermissionInfo(Set<String> modules, Set<String> roles) {
 
-        public UserPermissionInfo(Set<String> modules, Set<String> roles) {
-            this.modules = modules;
-            this.roles = roles;
-        }
-
-        public Set<String> getModules() {
-            return modules;
-        }
-
-        public Set<String> getRoles() {
-            return roles;
-        }
     }
 
 

@@ -25,6 +25,6 @@ public class AuthenticationService implements UserDetailsService {
         PermissionService.UserPermissionInfo permissionInfo =
                 permissionService.getUserPermissionInfo(user);
 
-        return new UserPrincipal(user, permissionInfo.getModules(), permissionInfo.getRoles());
+        return new UserPrincipal(user, permissionInfo.modules(), permissionInfo.roles());
     }
 }

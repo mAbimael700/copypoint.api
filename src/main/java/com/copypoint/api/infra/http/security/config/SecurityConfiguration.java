@@ -59,7 +59,6 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()
                 )
-                .userDetailsService(userDetailsService())
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 //.addFilterAfter(authorizationFilter, AuthenticationFilter.class)
                 .build();
@@ -76,10 +75,5 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    // Método moderno: exponer AuthenticationService como UserDetailsService
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return authenticationService;
-    }
 
 }
