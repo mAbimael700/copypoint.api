@@ -1,5 +1,8 @@
 package com.copypoint.api.infra.whatsappbusiness.service.webhook;
 
+import com.copypoint.api.domain.attachment.Attachment;
+import com.copypoint.api.domain.attachment.AttachmentFileType;
+import com.copypoint.api.domain.attachment.service.AttachmentService;
 import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.contact.service.ContactService;
 import com.copypoint.api.domain.conversation.Conversation;
@@ -47,6 +50,9 @@ public class WhatsAppBusinessWebhookService {
 
     @Autowired
     private WhatsAppMediaService whatsAppMediaService;
+
+    @Autowired
+    private AttachmentService attachmentService;
 
     // Luego modificar el método verifyWebhookToken en WhatsAppBusinessWebhookService:
     public boolean verifyWebhookToken(Long customerServicePhoneId, String verifyToken) {
@@ -154,45 +160,77 @@ public class WhatsAppBusinessWebhookService {
             // Guardar el mensaje para obtener su ID
             message = messageService.save(message);
 
-            // Procesar medios de forma no bloqueante
-            List<String> mediaUrls = new ArrayList<>();
 
             try {
                 if (messageDto.image() != null) {
-                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
-                            messageDto.image().id(), phone, message);
-                    if (mediaUrl != null) {
-                        mediaUrls.add(mediaUrl);
+                    String originalName = messageDto.image().caption();
+                    if (originalName == null) {
+                        originalName = "image_" + messageDto.image().id();
                     }
 
+                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.image().id(), phone, message,
+                            originalName, AttachmentFileType.IMAGE);
+
                     // Si hay caption en la imagen, usarla como texto
-                    if (messageDto.image().caption() != null) {
+                    if (messageDto.image().caption() != null && bodyText.isEmpty()) {
                         bodyText = messageDto.image().caption();
                     }
                 }
 
                 if (messageDto.video() != null) {
-                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
-                            messageDto.video().id(), phone, message);
-                    if (mediaUrl != null) {
-                        mediaUrls.add(mediaUrl);
+                    String originalName = messageDto.video().caption();
+                    if (originalName == null) {
+                        originalName = "video_" + messageDto.video().id();
+                    }
+
+                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.video().id(), phone, message,
+                            originalName, AttachmentFileType.VIDEO);
+
+                    // Si hay caption en el video, usarla como texto
+                    if (messageDto.video().caption() != null && bodyText.isEmpty()) {
+                        bodyText = messageDto.video().caption();
                     }
                 }
 
                 if (messageDto.audio() != null) {
-                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
-                            messageDto.audio().id(), phone, message);
-                    if (mediaUrl != null) {
-                        mediaUrls.add(mediaUrl);
+                    String originalName = messageDto.audio().caption();
+                    if (originalName == null) {
+                        originalName = "audio_" + messageDto.audio().id();
                     }
+
+                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.audio().id(), phone, message,
+                            originalName, AttachmentFileType.AUDIO);
                 }
 
                 if (messageDto.document() != null) {
-                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
-                            messageDto.document().id(), phone, message);
-                    if (mediaUrl != null) {
-                        mediaUrls.add(mediaUrl);
+                    String originalName = messageDto.audio().caption();
+
+                    if (originalName == null) {
+                        originalName = "audio_" + messageDto.audio().id();
                     }
+
+                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.audio().id(), phone, message,
+                            originalName, AttachmentFileType.AUDIO);
+
+                }
+
+                if (messageDto.document() != null) {
+                    String originalName = messageDto.document().filename();
+                    if (originalName == null) {
+                        originalName = "document_" + messageDto.document().id();
+                    }
+
+                    // Detectar tipo de archivo basado en el nombre
+                    AttachmentFileType fileType = attachmentService.detectFileType(
+                            originalName, messageDto.document().mimeType());
+
+                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.document().id(), phone, message,
+                            originalName, fileType);
                 }
 
             } catch (Exception mediaException) {
@@ -201,15 +239,14 @@ public class WhatsAppBusinessWebhookService {
                         messageDto.id(), mediaException.getMessage());
             }
 
-            // Actualizar el mensaje con las URLs de media (las que se pudieron procesar)
-            if (!mediaUrls.isEmpty() || !bodyText.equals(message.getBody())) {
-                message.setMediaUrls(mediaUrls);
+            // Actualizar el cuerpo del mensaje si se modificó por captions
+            if (!bodyText.equals(message.getBody())) {
                 message.setBody(bodyText);
                 messageService.save(message);
             }
 
-            logger.info("Mensaje procesado exitosamente: {} de {} (medios: {})",
-                    messageDto.id(), messageDto.from(), mediaUrls.size());
+            logger.info("Mensaje procesado exitosamente: {} de {} (attachments: {})",
+                    messageDto.id(), messageDto.from(), message.getAttachments().size());
 
         } catch (Exception e) {
             logger.error("Error procesando mensaje entrante: {}", e.getMessage(), e);

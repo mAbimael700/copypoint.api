@@ -1,5 +1,9 @@
 package com.copypoint.api.infra.whatsappbusiness.service.media;
 
+import com.copypoint.api.domain.attachment.Attachment;
+import com.copypoint.api.domain.attachment.AttachmentDownloadStatus;
+import com.copypoint.api.domain.attachment.AttachmentFileType;
+import com.copypoint.api.domain.attachment.service.AttachmentService;
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
 import com.copypoint.api.domain.customerservicephone.service.CustomerServicePhoneService;
 import com.copypoint.api.domain.message.Message;
@@ -13,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,20 +37,37 @@ public class WhatsAppMediaService {
     @Autowired
     private CustomerServicePhoneService customerServicePhoneService;
 
+    @Autowired
+    private AttachmentService attachmentService;
+
     /**
-     * Descarga y almacena un archivo de media de WhatsApp en R2
-     * Retorna la URL inmediatamente, incluso si la descarga falla
+     * Crea un attachment y descarga el media de WhatsApp
+     * Retorna el attachment inmediatamente, incluso si la descarga está pendiente
      */
-    public String downloadAndStoreMedia(String mediaId, CustomerServicePhone phone, Message message) {
+    public Attachment downloadAndStoreMedia(String mediaId,
+                                            CustomerServicePhone phone,
+                                            Message message,
+                                            String originalName,
+                                            AttachmentFileType fileType
+    ) {
+
+        Attachment attachment = attachmentService.createWhatsAppAttachment(
+                message, mediaId, originalName, fileType);
+
+        attachment = attachmentService.save(attachment);
+
+        // Asociar el attachment al mensaje
+        message.addAttachment(attachment);
+
         // Generar URL de R2 inmediatamente
         String r2Key = generateR2Key(mediaId, phone.getId());
-        String r2Url = generateR2Url(r2Key);
 
         // Intentar descarga síncrona primero (con timeout corto)
         try {
-            if (downloadMediaSync(mediaId, phone, r2Key)) {
+            if (downloadMediaSync(mediaId, phone, r2Key, attachment)) {
                 logger.info("Media descargado síncronamente: {}", mediaId);
-                return r2Url;
+                return attachment;
+                ;
             }
         } catch (Exception e) {
             logger.warn("Descarga síncrona falló para media {}, programando descarga asíncrona: {}",
@@ -56,13 +78,14 @@ public class WhatsAppMediaService {
         downloadMediaAsync(mediaId, phone, r2Key, message);
 
         // Retornar URL aunque la descarga esté pendiente
-        return r2Url;
+        return attachment;
     }
 
     /**
      * Descarga síncrona con timeout corto
      */
-    private boolean downloadMediaSync(String mediaId, CustomerServicePhone phone, String r2Key) {
+    private boolean downloadMediaSync(String mediaId, CustomerServicePhone phone,
+                                      String r2Key, Attachment attachment) {
         try {
             if (!(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
                 return false;
@@ -71,8 +94,12 @@ public class WhatsAppMediaService {
             // Verificar si ya existe en R2
             if (r2Service.fileExists(r2Key)) {
                 logger.debug("Media {} ya existe en R2", mediaId);
+                updateAttachmentAsDownloaded(attachment, r2Key);
                 return true;
             }
+
+            // Marcar como descargando
+            attachmentService.markAsDownloading(attachment);
 
             // Descargar de WhatsApp
             byte[] mediaData = whatsAppClient.downloadMedia(mediaId, config.getAccessTokenEncrypted());
@@ -81,15 +108,39 @@ public class WhatsAppMediaService {
                 return false;
             }
 
-            // Subir a R2
+            // Detectar tipo de contenido
             String contentType = detectContentType(mediaId, mediaData);
+
+            // Actualizar el attachment con información del archivo
+            attachment.setMimeType(contentType);
+            attachment.setFileSizeBytes((long) mediaData.length);
+
+
+            // Actualizar tipo de archivo si no fue especificado
+            if (attachment.getFileType() == AttachmentFileType.OTHER) {
+                AttachmentFileType detectedType = attachmentService.detectFileType(
+                        attachment.getOriginalName(), contentType);
+                attachment.setFileType(detectedType);
+            }
+
+            // Subir a R2
             r2Service.uploadFile(r2Key, mediaData, contentType);
+
+            // Marcar como descargado exitosamente
+            attachmentService.markAsDownloaded(attachment,
+                    r2Key,
+                    contentType,
+                    (long) mediaData.length);
 
             logger.info("Media {} subido exitosamente a R2 como {}", mediaId, r2Key);
             return true;
 
         } catch (Exception e) {
             logger.error("Error en descarga síncrona de media {}: {}", mediaId, e.getMessage());
+
+            // Marcar attachment como fallido
+            attachmentService.markAsFailed(attachment, "Error descarga síncrona: " + e.getMessage());
+
             return false;
         }
     }
@@ -99,23 +150,24 @@ public class WhatsAppMediaService {
      */
     @Async
     public void downloadMediaAsync(String mediaId, CustomerServicePhone phone,
-                                   String r2Key, Message message) {
+                                   String r2Key, Attachment attachment) {
         CompletableFuture.runAsync(() -> {
             int maxRetries = 3;
             int retryDelay = 5000; // 5 segundos
 
             for (int attempt = 1; attempt <= maxRetries; attempt++) {
                 try {
-                    if (downloadMediaSync(mediaId, phone, r2Key)) {
+                    if (downloadMediaSync(mediaId, phone, r2Key, attachment)) {
                         logger.info("Media {} descargado exitosamente en intento {} (asíncrono)",
                                 mediaId, attempt);
-
-                        // Actualizar el mensaje para indicar que el media está disponible
-                        updateMessageMediaStatus(message, mediaId, true);
                         return;
                     }
                 } catch (Exception e) {
                     logger.warn("Intento {} fallido para media {}: {}", attempt, mediaId, e.getMessage());
+
+                    // Actualizar el número de intentos en el attachment
+                    attachment.setDownloadAttempts(attempt);
+                    attachmentService.save(attachment);
                 }
 
                 // Esperar antes del siguiente intento
@@ -131,39 +183,88 @@ public class WhatsAppMediaService {
 
             logger.error("Falló la descarga asíncrona de media {} después de {} intentos",
                     mediaId, maxRetries);
-            updateMessageMediaStatus(message, mediaId, false);
+
+            // Marcar como fallido definitivamente
+            attachmentService.markAsFailed(attachment,
+                    "Falló después de " + maxRetries + " intentos de descarga");
         });
     }
 
     /**
      * Reintenta la descarga de un media específico
      */
-    public boolean retryMediaDownload(String mediaId, Long phoneId, Long messageId) {
+    public boolean retryMediaDownload(Long attachmentId) {
         try {
-            // Buscar el mensaje y teléfono
-            Optional<Message> message = messageService.getById(messageId);
+            Optional<Attachment> attachmentOpt = attachmentService.findById(attachmentId);
 
-            if (message.isEmpty()) {
+            if (attachmentOpt.isEmpty()) {
+                logger.warn("No se encontró attachment con ID: {}", attachmentId);
                 return false;
             }
 
-            // Buscar el teléfono (necesitarías este método en tu servicio)
-            CustomerServicePhone phone = customerServicePhoneService.getById(phoneId);
+            Attachment attachment = attachmentOpt.get();
+            String mediaId = attachment.getMediaSid();
 
-            String r2Key = generateR2Key(mediaId, phoneId);
+            if (mediaId == null) {
+                logger.warn("Attachment {} no tiene mediaSid", attachmentId);
+                return false;
+            }
+
+            Message message = attachment.getMessage();
+            if (message == null) {
+                logger.warn("Attachment {} no tiene mensaje asociado", attachmentId);
+                return false;
+            }
+
+            // Obtener el teléfono de customer service desde la conversación
+            CustomerServicePhone phone = message.getConversation().getCustomerServicePhone();
+
+            String r2Key = generateR2Key(mediaId, phone.getId());
+
+            // Resetear estado para reintento
+            attachment.setDownloadStatus(AttachmentDownloadStatus.PENDING);
+            attachment.setDownloadErrorMessage(null);
+            attachmentService.save(attachment);
 
             // Intentar descarga
-            boolean success = downloadMediaSync(mediaId, phone, r2Key);
-            updateMessageMediaStatus(message.get(), mediaId, success);
+            boolean success = downloadMediaSync(mediaId, phone, r2Key, attachment);
+
+            if (!success) {
+                // Si falla síncronamente, programar descarga asíncrona
+                downloadMediaAsync(mediaId, phone, r2Key, attachment);
+            }
 
             return success;
 
-
         } catch (Exception e) {
-            logger.error("Error reintentando descarga de media {}: {}", mediaId, e.getMessage());
+            logger.error("Error reintentando descarga de attachment {}: {}", attachmentId, e.getMessage());
             return false;
         }
     }
+
+    /*
+     * Método para reintentar descargas fallidas masivamente
+     */
+    public void retryFailedDownloads(int maxAttempts) {
+        try {
+            List<Attachment> failedAttachments = attachmentService.findAttachmentsForRetry(maxAttempts);
+
+            logger.info("Reintentando {} descargas fallidas", failedAttachments.size());
+
+            for (Attachment attachment : failedAttachments) {
+                try {
+                    retryMediaDownload(attachment.getId());
+                } catch (Exception e) {
+                    logger.error("Error reintentando descarga de attachment {}: {}",
+                            attachment.getId(), e.getMessage());
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error("Error en proceso de reintento masivo: {}", e.getMessage());
+        }
+    }
+
 
     /**
      * Genera la clave única para R2
@@ -206,21 +307,22 @@ public class WhatsAppMediaService {
     }
 
     /**
-     * Actualiza el estado del media en el mensaje
+     * Actualiza un attachment como descargado cuando ya existe en R2
      */
-    private void updateMessageMediaStatus(Message message, String mediaId, boolean available) {
+    private void updateAttachmentAsDownloaded(Attachment attachment, String r2Key) {
         try {
-            // Aquí podrías actualizar un campo en el mensaje que indique el estado del media
-            // Por ejemplo, podrías tener un Map<String, Boolean> mediaAvailability en Message
+            // Generar URL de descarga
+            String downloadUrl = generateR2Url(r2Key);
 
-            // message.updateMediaAvailability(mediaId, available);
-            // messageService.save(message);
+            // Marcar como descargado
+            attachmentService.markAsDownloaded(attachment, r2Key,
+                    attachment.getMimeType(), attachment.getFileSizeBytes());
 
-            logger.info("Estado de media {} actualizado para mensaje {}: disponible={}",
-                    mediaId, message.getId(), available);
+            logger.debug("Attachment {} marcado como descargado (ya existía en R2)",
+                    attachment.getId());
 
         } catch (Exception e) {
-            logger.error("Error actualizando estado de media: {}", e.getMessage());
+            logger.error("Error actualizando attachment como descargado: {}", e.getMessage());
         }
     }
 
@@ -233,7 +335,23 @@ public class WhatsAppMediaService {
     }
 
     /**
-     * Obtiene la URL de descarga directa de R2
+     * Obtiene la URL de descarga directa de R2 para un attachment
+     */
+    public String getMediaDownloadUrl(Attachment attachment) {
+        if (attachment == null || !attachment.isDownloaded()) {
+            return null;
+        }
+
+        String r2Key = attachment.getStoragePath();
+        if (r2Key != null && r2Service.fileExists(r2Key)) {
+            return generateR2Url(r2Key);
+        }
+
+        return null;
+    }
+
+    /**
+     * Obtiene la URL de descarga por mediaId y phoneId (método de compatibilidad)
      */
     public String getMediaDownloadUrl(String mediaId, Long phoneId) {
         String r2Key = generateR2Key(mediaId, phoneId);
@@ -241,5 +359,45 @@ public class WhatsAppMediaService {
             return generateR2Url(r2Key);
         }
         return null;
+    }
+
+    /**
+     * Obtiene estadísticas de descargas para un mensaje
+     */
+    public AttachmentDownloadStats getDownloadStats(Message message) {
+        if (!message.hasAttachments()) {
+            return new AttachmentDownloadStats(0, 0, 0, 0);
+        }
+
+        long total = message.getAttachments().size();
+        long downloaded = message.getAttachments().stream()
+                .mapToLong(a -> a.isDownloaded() ? 1 : 0).sum();
+        long pending = message.getAttachments().stream()
+                .mapToLong(a -> a.isPending() ? 1 : 0).sum();
+        long failed = message.getAttachments().stream()
+                .mapToLong(a -> a.isFailed() ? 1 : 0).sum();
+
+        return new AttachmentDownloadStats(total, downloaded, pending, failed);
+    }
+
+    /**
+     * Clase para estadísticas de descarga
+     */
+    public record AttachmentDownloadStats(long total,
+                                          long downloaded,
+                                          long pending,
+                                          long failed) {
+
+        public boolean isComplete() {
+            return downloaded == total;
+        }
+
+        public boolean hasFailures() {
+            return failed > 0;
+        }
+
+        public double getSuccessRate() {
+            return total > 0 ? (double) downloaded / total : 0.0;
+        }
     }
 }
