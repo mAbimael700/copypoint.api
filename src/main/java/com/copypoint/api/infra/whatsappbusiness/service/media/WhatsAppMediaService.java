@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.service;
+package com.copypoint.api.infra.whatsappbusiness.service.media;
 
 import com.copypoint.api.domain.customerservicephone.CustomerServicePhone;
 import com.copypoint.api.domain.customerservicephone.service.CustomerServicePhoneService;
@@ -6,7 +6,7 @@ import com.copypoint.api.domain.message.Message;
 import com.copypoint.api.domain.message.service.MessageService;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
 import com.copypoint.api.infra.cloudflare.r2.service.CloudflareR2Service;
-import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
+import com.copypoint.api.infra.whatsappbusiness.http.client.WhatsAppBusinessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

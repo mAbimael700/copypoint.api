@@ -1,6 +1,6 @@
-package com.copypoint.api.infra.whatsappbusiness.controller;
+package com.copypoint.api.infra.whatsappbusiness.controller.media;
 
-import com.copypoint.api.infra.whatsappbusiness.service.WhatsAppMediaService;
+import com.copypoint.api.infra.whatsappbusiness.service.media.WhatsAppMediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

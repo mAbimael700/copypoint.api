@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.service;
+package com.copypoint.api.infra.whatsappbusiness.service.webhook;
 
 import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.contact.service.ContactService;
@@ -12,8 +12,9 @@ import com.copypoint.api.domain.message.MessageStatus;
 import com.copypoint.api.domain.message.service.MessageService;
 import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
-import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
+import com.copypoint.api.infra.whatsappbusiness.http.client.WhatsAppBusinessClient;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.*;
+import com.copypoint.api.infra.whatsappbusiness.service.media.WhatsAppMediaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -267,26 +268,6 @@ public class WhatsAppBusinessWebhookService {
             }
         } catch (Exception e) {
             logger.error("Error actualizando estado del mensaje: {}", e.getMessage(), e);
-        }
-    }
-
-    private String downloadAndStoreMedia(String mediaId, CustomerServicePhone phone) {
-        try {
-            if (!(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
-                return null;
-            }
-
-            // Descargar media
-            byte[] mediaData = whatsAppClient.downloadMedia(mediaId, config.getAccessTokenEncrypted());
-
-            // Aquí deberías implementar el almacenamiento del archivo (S3, filesystem, etc.)
-            // y retornar la URL donde se guardó
-            // Por ahora retornamos un placeholder
-            return String.format("/media/whatsapp/%s", mediaId);
-
-        } catch (Exception e) {
-            logger.error("Error descargando media {}: {}", mediaId, e.getMessage(), e);
-            return null;
         }
     }
 

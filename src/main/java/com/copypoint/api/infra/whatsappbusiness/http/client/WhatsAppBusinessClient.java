@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.client;
+package com.copypoint.api.infra.whatsappbusiness.http.client;
 
 import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageRequestDTO;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageResponseDTO;
