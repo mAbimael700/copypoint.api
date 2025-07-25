@@ -1,7 +1,7 @@
-package com.copypoint.api.infra.whatsappbusiness.controller;
+package com.copypoint.api.infra.whatsappbusiness.controller.webhook;
 
 import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppWebhookDTO;
-import com.copypoint.api.infra.whatsappbusiness.service.WhatsAppBusinessWebhookService;
+import com.copypoint.api.infra.whatsappbusiness.service.webhook.WhatsAppBusinessWebhookService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;

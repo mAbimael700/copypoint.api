@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.service;
+package com.copypoint.api.infra.whatsappbusiness.service.webhook;
 
 import com.copypoint.api.domain.contact.Contact;
 import com.copypoint.api.domain.contact.service.ContactService;
@@ -12,8 +12,9 @@ import com.copypoint.api.domain.message.MessageStatus;
 import com.copypoint.api.domain.message.service.MessageService;
 import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
-import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
+import com.copypoint.api.infra.whatsappbusiness.http.client.WhatsAppBusinessClient;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.*;
+import com.copypoint.api.infra.whatsappbusiness.service.media.WhatsAppMediaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class WhatsAppBusinessWebhookService {
 
     @Autowired
     private WhatsAppBusinessClient whatsAppClient;
+
+    @Autowired
+    private WhatsAppMediaService whatsAppMediaService;
 
     // Luego modificar el método verifyWebhookToken en WhatsAppBusinessWebhookService:
     public boolean verifyWebhookToken(Long customerServicePhoneId, String verifyToken) {
@@ -135,42 +139,77 @@ public class WhatsAppBusinessWebhookService {
                 bodyText = messageDto.text().body();
             }
 
-            // Preparar URLs de media si existen
-            List<String> mediaUrls = new ArrayList<>();
-            if (messageDto.image() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.image().id(), phone));
-
-                if (messageDto.image().caption() != null) {
-                    bodyText = messageDto.image().caption();
-                }
-            }
-            if (messageDto.video() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.video().id(), phone));
-            }
-            if (messageDto.audio() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.audio().id(), phone));
-            }
-            if (messageDto.document() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.document().id(), phone));
-            }
-
-
-            // Crear mensaje
+            // Crear el mensaje PRIMERO sin las URLs de media
             Message message = Message.builder()
                     .messageSid(messageDto.id())
                     .direction(MessageDirection.INBOUND)
                     .status(MessageStatus.RECEIVED)
                     .conversation(conversation)
                     .body(bodyText)
-                    .mediaUrls(mediaUrls)
+                    .mediaUrls(new ArrayList<>()) // Inicializar vacío
                     .dateSent(messageDto.getTimestampAsInstant() != null ?
                             LocalDateTime.ofInstant(messageDto.getTimestampAsInstant(), ZoneId.systemDefault()) : null)
                     .build();
 
-            // Guardar el mensaje
-            messageService.save(message);
+            // Guardar el mensaje para obtener su ID
+            message = messageService.save(message);
 
-            logger.info("Mensaje procesado exitosamente: {} de {}", messageDto.id(), messageDto.from());
+            // Procesar medios de forma no bloqueante
+            List<String> mediaUrls = new ArrayList<>();
+
+            try {
+                if (messageDto.image() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.image().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+
+                    // Si hay caption en la imagen, usarla como texto
+                    if (messageDto.image().caption() != null) {
+                        bodyText = messageDto.image().caption();
+                    }
+                }
+
+                if (messageDto.video() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.video().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+                if (messageDto.audio() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.audio().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+                if (messageDto.document() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.document().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+            } catch (Exception mediaException) {
+                // Log el error pero no fallar el procesamiento del mensaje
+                logger.warn("Error procesando medios para mensaje {}: {}",
+                        messageDto.id(), mediaException.getMessage());
+            }
+
+            // Actualizar el mensaje con las URLs de media (las que se pudieron procesar)
+            if (!mediaUrls.isEmpty() || !bodyText.equals(message.getBody())) {
+                message.setMediaUrls(mediaUrls);
+                message.setBody(bodyText);
+                messageService.save(message);
+            }
+
+            logger.info("Mensaje procesado exitosamente: {} de {} (medios: {})",
+                    messageDto.id(), messageDto.from(), mediaUrls.size());
 
         } catch (Exception e) {
             logger.error("Error procesando mensaje entrante: {}", e.getMessage(), e);
@@ -229,26 +268,6 @@ public class WhatsAppBusinessWebhookService {
             }
         } catch (Exception e) {
             logger.error("Error actualizando estado del mensaje: {}", e.getMessage(), e);
-        }
-    }
-
-    private String downloadAndStoreMedia(String mediaId, CustomerServicePhone phone) {
-        try {
-            if (!(phone.getMessagingConfig() instanceof WhatsAppBusinessConfiguration config)) {
-                return null;
-            }
-
-            // Descargar media
-            byte[] mediaData = whatsAppClient.downloadMedia(mediaId, config.getAccessTokenEncrypted());
-
-            // Aquí deberías implementar el almacenamiento del archivo (S3, filesystem, etc.)
-            // y retornar la URL donde se guardó
-            // Por ahora retornamos un placeholder
-            return String.format("/media/whatsapp/%s", mediaId);
-
-        } catch (Exception e) {
-            logger.error("Error descargando media {}: {}", mediaId, e.getMessage(), e);
-            return null;
         }
     }
 

@@ -1,4 +1,4 @@
-package com.copypoint.api.infra.whatsappbusiness.service;
+package com.copypoint.api.infra.whatsappbusiness.service.messaging;
 
 import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderConfiguration;
 import com.copypoint.api.domain.messagingproviderconfiguration.MessagingProviderType;
@@ -6,7 +6,7 @@ import com.copypoint.api.domain.messagingproviderconfiguration.service.Messaging
 import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessConfiguration;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageRequestDTO;
 import com.copypoint.api.infra.whatsappbusiness.dto.response.WhatsAppSendMessageResponseDTO;
-import com.copypoint.api.infra.whatsappbusiness.client.WhatsAppBusinessClient;
+import com.copypoint.api.infra.whatsappbusiness.http.client.WhatsAppBusinessClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
