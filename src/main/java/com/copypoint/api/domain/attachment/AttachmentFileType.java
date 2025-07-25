@@ -9,5 +9,11 @@ public enum AttachmentFileType {
     PPT,
     ODT,
     TXT,
+    IMAGE,
+    VIDEO,
+    AUDIO,
+    DOCUMENT,
+    SPREADSHEET,
+    PRESENTATION,
     OTHER
 }
