@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.message;
 
+import com.copypoint.api.domain.attachment.Attachment;
 import com.copypoint.api.domain.conversation.Conversation;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -38,6 +39,12 @@ public class Message {
     @JoinColumn(name = "conversation_id")
     private Conversation conversation;
 
+
+    @OneToMany(mappedBy = "message", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Attachment> attachments = new ArrayList<>();
+
+    @Deprecated
     @ElementCollection
     @CollectionTable(
             name = "message_attachment_urls",
@@ -67,6 +74,48 @@ public class Message {
     // Fecha de la última actualización del mensaje
     @Column(name = "date_updated")
     private LocalDateTime dateUpdated;
+
+    // Métodos de conveniencia para attachments
+    public void addAttachment(Attachment attachment) {
+        attachments.add(attachment);
+        attachment.setMessage(this);
+    }
+
+    public void removeAttachment(Attachment attachment) {
+        attachments.remove(attachment);
+        attachment.setMessage(null);
+    }
+
+    public boolean hasAttachments() {
+        return attachments != null && !attachments.isEmpty();
+    }
+
+    public List<Attachment> getDownloadedAttachments() {
+        return attachments.stream()
+                .filter(Attachment::isDownloaded)
+                .toList();
+    }
+
+    public List<Attachment> getPendingAttachments() {
+        return attachments.stream()
+                .filter(Attachment::isPending)
+                .toList();
+    }
+
+    public List<Attachment> getFailedAttachments() {
+        return attachments.stream()
+                .filter(Attachment::isFailed)
+                .toList();
+    }
+
+    public boolean allAttachmentsDownloaded() {
+        return attachments.stream().allMatch(Attachment::isDownloaded);
+    }
+
+    public boolean hasFailedAttachments() {
+        return attachments.stream().anyMatch(Attachment::isFailed);
+    }
+
 
     // Método para actualizar la fecha de modificación automáticamente
     @PreUpdate

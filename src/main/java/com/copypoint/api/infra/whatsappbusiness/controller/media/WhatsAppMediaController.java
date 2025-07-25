@@ -48,11 +48,11 @@ public class WhatsAppMediaController {
      * Reintenta la descarga de un media
      */
     @PostMapping("/retry/{phoneId}/{mediaId}")
-    public ResponseEntity<?> retryMediaDownload(@PathVariable Long phoneId,
-                                                @PathVariable String mediaId,
-                                                @RequestParam Long messageId) {
+    public ResponseEntity<?> retryMediaDownload(
+            @PathVariable Long mediaId,
+            @RequestParam Long messageId) {
         try {
-            boolean success = whatsAppMediaService.retryMediaDownload(mediaId, phoneId, messageId);
+            boolean success = whatsAppMediaService.retryMediaDownload(mediaId);
 
             Map<String, Object> response = new HashMap<>();
             response.put("success", success);
