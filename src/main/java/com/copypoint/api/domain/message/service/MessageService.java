@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class MessageService implements IMessageService {
@@ -77,5 +78,9 @@ public class MessageService implements IMessageService {
     @Override
     public Message findByMessageSid(String messageSid) {
         return messageRepository.findByMessageSid(messageSid);
+    }
+
+    public Optional<Message> getById(Long messageId) {
+        return messageRepository.findById(messageId);
     }
 }

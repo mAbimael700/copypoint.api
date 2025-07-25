@@ -44,6 +44,9 @@ public class WhatsAppBusinessWebhookService {
     @Autowired
     private WhatsAppBusinessClient whatsAppClient;
 
+    @Autowired
+    private WhatsAppMediaService whatsAppMediaService;
+
     // Luego modificar el método verifyWebhookToken en WhatsAppBusinessWebhookService:
     public boolean verifyWebhookToken(Long customerServicePhoneId, String verifyToken) {
         try {
@@ -135,42 +138,77 @@ public class WhatsAppBusinessWebhookService {
                 bodyText = messageDto.text().body();
             }
 
-            // Preparar URLs de media si existen
-            List<String> mediaUrls = new ArrayList<>();
-            if (messageDto.image() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.image().id(), phone));
-
-                if (messageDto.image().caption() != null) {
-                    bodyText = messageDto.image().caption();
-                }
-            }
-            if (messageDto.video() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.video().id(), phone));
-            }
-            if (messageDto.audio() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.audio().id(), phone));
-            }
-            if (messageDto.document() != null) {
-                mediaUrls.add(downloadAndStoreMedia(messageDto.document().id(), phone));
-            }
-
-
-            // Crear mensaje
+            // Crear el mensaje PRIMERO sin las URLs de media
             Message message = Message.builder()
                     .messageSid(messageDto.id())
                     .direction(MessageDirection.INBOUND)
                     .status(MessageStatus.RECEIVED)
                     .conversation(conversation)
                     .body(bodyText)
-                    .mediaUrls(mediaUrls)
+                    .mediaUrls(new ArrayList<>()) // Inicializar vacío
                     .dateSent(messageDto.getTimestampAsInstant() != null ?
                             LocalDateTime.ofInstant(messageDto.getTimestampAsInstant(), ZoneId.systemDefault()) : null)
                     .build();
 
-            // Guardar el mensaje
-            messageService.save(message);
+            // Guardar el mensaje para obtener su ID
+            message = messageService.save(message);
 
-            logger.info("Mensaje procesado exitosamente: {} de {}", messageDto.id(), messageDto.from());
+            // Procesar medios de forma no bloqueante
+            List<String> mediaUrls = new ArrayList<>();
+
+            try {
+                if (messageDto.image() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.image().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+
+                    // Si hay caption en la imagen, usarla como texto
+                    if (messageDto.image().caption() != null) {
+                        bodyText = messageDto.image().caption();
+                    }
+                }
+
+                if (messageDto.video() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.video().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+                if (messageDto.audio() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.audio().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+                if (messageDto.document() != null) {
+                    String mediaUrl = whatsAppMediaService.downloadAndStoreMedia(
+                            messageDto.document().id(), phone, message);
+                    if (mediaUrl != null) {
+                        mediaUrls.add(mediaUrl);
+                    }
+                }
+
+            } catch (Exception mediaException) {
+                // Log el error pero no fallar el procesamiento del mensaje
+                logger.warn("Error procesando medios para mensaje {}: {}",
+                        messageDto.id(), mediaException.getMessage());
+            }
+
+            // Actualizar el mensaje con las URLs de media (las que se pudieron procesar)
+            if (!mediaUrls.isEmpty() || !bodyText.equals(message.getBody())) {
+                message.setMediaUrls(mediaUrls);
+                message.setBody(bodyText);
+                messageService.save(message);
+            }
+
+            logger.info("Mensaje procesado exitosamente: {} de {} (medios: {})",
+                    messageDto.id(), messageDto.from(), mediaUrls.size());
 
         } catch (Exception e) {
             logger.error("Error procesando mensaje entrante: {}", e.getMessage(), e);
