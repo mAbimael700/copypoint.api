@@ -206,18 +206,6 @@ public class WhatsAppBusinessWebhookService {
                             originalName, AttachmentFileType.AUDIO);
                 }
 
-                if (messageDto.document() != null) {
-                    String originalName = messageDto.document().caption();
-
-                    if (originalName == null) {
-                        originalName = "document_" + messageDto.document().id();
-                    }
-
-                    Attachment attachment = whatsAppMediaService.downloadAndStoreMedia(
-                            messageDto.document().id(), phone, message,
-                            originalName, AttachmentFileType.DOCUMENT);
-
-                }
 
                 if (messageDto.document() != null) {
                     String originalName = messageDto.document().filename();
