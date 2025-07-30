@@ -15,7 +15,7 @@ public class PaymentController {
     @Autowired
     private PaymentService paymentService;
 
-    @GetMapping("/copypoint/copypointId")
+    @GetMapping("/copypoint/{copypointId}")
     public ResponseEntity<Page<PaymentResponse>> getByCopypoint(
             @PathVariable Long copypointId,
             Pageable pageable) {
@@ -26,7 +26,7 @@ public class PaymentController {
         return ResponseEntity.ok(payments);
     }
 
-    @GetMapping("/sale/saleId")
+    @GetMapping("/sale/{saleId}")
     public ResponseEntity<Page<PaymentResponse>> getBySale(
             @PathVariable Long saleId,
             Pageable pageable) {

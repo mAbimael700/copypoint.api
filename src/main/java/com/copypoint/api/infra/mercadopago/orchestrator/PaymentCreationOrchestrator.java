@@ -42,7 +42,7 @@ public class PaymentCreationOrchestrator {
 
         try {
             // Paso 1: Crear el pago inicial en la base de datos
-            payment = paymentService.createPayment(request);
+            payment = paymentService.createPayment(request, "Digital Wallet");
             logger.info("Payment creado con ID: {}", payment.getId());
 
             // Paso 2: Crear la preferencia en MercadoPago

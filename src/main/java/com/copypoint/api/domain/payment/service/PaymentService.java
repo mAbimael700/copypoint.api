@@ -10,6 +10,8 @@ import com.copypoint.api.domain.payment.validation.service.PaymentValidationServ
 import com.copypoint.api.domain.paymentattempt.entity.PaymentAttempt;
 import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;
+import com.copypoint.api.domain.paymentmethod.PaymentMethod;
+import com.copypoint.api.domain.paymentmethod.repository.PaymentMethodRepository;
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.sale.repository.SaleRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,9 +39,12 @@ public class PaymentService {
     @Autowired
     private PaymentValidationService paymentValidationService;
 
+    @Autowired
+    private PaymentMethodRepository paymentMethodRepository;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Payment createPayment(PaymentRequest paymentRequest) {
+    public Payment createPayment(PaymentRequest paymentRequest, String paymentMethod) {
         // Verificar que la venta existe
         Optional<Sale> saleOpt = saleRepository.findById(paymentRequest.saleId());
         if (saleOpt.isEmpty()) {
@@ -55,12 +60,19 @@ public class PaymentService {
             throw new IllegalArgumentException("Validación fallida: " + String.join(", ", validationResult.getErrors()));
         }
 
+        Optional<PaymentMethod> paymentMethodOpt = paymentMethodRepository.findByDescription(paymentMethod);
+
+        if (paymentMethodOpt.isEmpty()) {
+            throw new IllegalArgumentException("Validación fallida: Payment method no encontrado" );
+        }
+
         // Crear el pago en la base de datos
         Payment payment = new Payment();
         payment.setSale(sale);
         payment.setAmount(paymentRequest.amount());
         payment.setCurrency(paymentRequest.currency() != null ? paymentRequest.currency() : sale.getCurrency());
         payment.setStatus(PaymentStatus.PENDING);
+        payment.setPaymentMethod(paymentMethodOpt.get());
         payment.setCreatedAt(LocalDateTime.now());
 
         return paymentRepository.save(payment);
@@ -162,11 +174,11 @@ public class PaymentService {
         return paymentRepository.findAll(pageable);
     }
 
-    public Page<Payment> getPaymentsByCopypoint(Long copypointId, Pageable pageable){
+    public Page<Payment> getPaymentsByCopypoint(Long copypointId, Pageable pageable) {
         return paymentRepository.findBySale_CopypointId(copypointId, pageable);
     }
 
-    public Page<Payment> getPaymentsBySale(Long saleId, Pageable pageable){
+    public Page<Payment> getPaymentsBySale(Long saleId, Pageable pageable) {
         return paymentRepository.findBySaleId(saleId, pageable);
     }
 }
