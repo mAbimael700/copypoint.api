@@ -29,9 +29,6 @@ public class SalesController {
     private SaleService saleService;
 
     @Autowired
-    private SaleProfileService saleProfileService;
-
-    @Autowired
     private EmployeeRepository employeeRepository;
 
     @Autowired
@@ -57,45 +54,6 @@ public class SalesController {
         }
     }
 
-    /**
-     * Agregar un profile a una venta PENDING
-     */
-    @PostMapping("/{saleId}/profiles")
-    public ResponseEntity<SaleDTO> addProfileToSale(
-            @PathVariable Long saleId,
-            @Valid @RequestBody SaleProfileCreationDTO saleProfileDTO) {
-
-            SaleDTO updatedSale = saleProfileService.addProfileToSale(saleId, saleProfileDTO);
-            return ResponseEntity.ok(updatedSale);
-    }
-
-    @PatchMapping("/{saleId}/profiles")
-    public ResponseEntity<SaleDTO> updateSaleProfile(
-            @PathVariable Long saleId,
-            @RequestParam Long profileId,
-            @RequestParam Long serviceId,
-            @Valid @RequestBody SaleProfileUpdateDTO profileUpdate) {
-
-            SaleDTO updatedSale = saleProfileService.updateProfileInSale(saleId, profileId, serviceId, profileUpdate);
-            return ResponseEntity.ok(updatedSale);
-
-    }
-
-    /**
-     * Agregar un profile a una venta PENDING
-     */
-    @GetMapping("/{saleId}/profiles")
-    public ResponseEntity<Page<SaleProfileDTO>> getProfilesBySale(
-            @PathVariable Long saleId,
-            Pageable pageable
-    ) {
-        try {
-            Page<SaleProfileDTO> updatedSale = saleProfileService.getBySaleId(saleId, pageable);
-            return ResponseEntity.ok(updatedSale);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     /**
      * Actualizar el estado de una venta
@@ -183,7 +141,6 @@ public class SalesController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
     /**
      * Obtiene las ventas apropiadas según el rol del usuario

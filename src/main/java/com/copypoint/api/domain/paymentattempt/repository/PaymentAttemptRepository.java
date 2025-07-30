@@ -1,13 +1,14 @@
 package com.copypoint.api.domain.paymentattempt.repository;
 
-import com.copypoint.api.domain.paymentattempt.PaymentAttempt;
-import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttempt;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, Long> {
     /* Encuentra todos los intentos de pago para un payment específico, ordenados por fecha de creación descendente
@@ -68,4 +69,18 @@ public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, 
      * Encuentra intentos de pago por código de error específico
      */
     List<PaymentAttempt> findByErrorCodeOrderByCreatedAtDesc(String errorCode);
+
+    Optional<PaymentAttempt> findTopByPaymentReferenceIdAndStatusOrderByCreatedAtDesc(
+            Long paymentId, PaymentAttemptStatus status);
+
+    // Nuevos métodos para el monitoreo
+    List<PaymentAttempt> findByCreatedAtAfterOrderByCreatedAtDesc(LocalDateTime since);
+
+    List<PaymentAttempt> findTop10ByGatewayResponseIsNotNullOrderByCreatedAtDesc();
+
+    /**
+     * Encuentra el último intento de pago para un payment específico usando el campo correcto
+     */
+    @Query("SELECT pa FROM PaymentAttempt pa WHERE pa.paymentReference.id = :paymentId ORDER BY pa.createdAt DESC LIMIT 1")
+    Optional<PaymentAttempt> findTopByPaymentReferenceIdOrderByCreatedAtDesc(@Param("paymentId") Long paymentId);
 }

@@ -4,7 +4,7 @@ package com.copypoint.api.infra.mercadopago.handler;
 import com.copypoint.api.domain.payment.Payment;
 import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.service.PaymentService;
-import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
 import com.copypoint.api.infra.mercadopago.service.MercadoPagoGatewayService;
 import org.slf4j.Logger;

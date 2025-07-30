@@ -27,7 +27,8 @@ public class MercadoPagoController {
      * @return PaymentResponse con los datos del pago creado
      */
     @PostMapping
-    public ResponseEntity<PaymentGatewayResponse> createPayment(@Valid @RequestBody PaymentRequest request) {
+    public ResponseEntity<PaymentGatewayResponse> createPayment(
+            @Valid @RequestBody PaymentRequest request) {
         try {
             PaymentGatewayResponse response = mercadoPagoService.createPayment(request);
             return ResponseEntity.ok(response);
