@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.paymentattempt;
+package com.copypoint.api.domain.paymentattempt.entity;
 
 import com.copypoint.api.domain.payment.Payment;
 import jakarta.persistence.*;

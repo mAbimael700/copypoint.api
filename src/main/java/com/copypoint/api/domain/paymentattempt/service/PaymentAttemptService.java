@@ -1,8 +1,8 @@
 package com.copypoint.api.domain.paymentattempt.service;
 
 import com.copypoint.api.domain.payment.Payment;
-import com.copypoint.api.domain.paymentattempt.PaymentAttempt;
-import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttempt;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

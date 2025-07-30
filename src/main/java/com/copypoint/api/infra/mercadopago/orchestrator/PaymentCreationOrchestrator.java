@@ -5,7 +5,7 @@ import com.copypoint.api.domain.payment.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.service.PaymentService;
-import com.copypoint.api.domain.paymentattempt.PaymentAttemptStatus;
+import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.service.PaymentAttemptService;
 import com.copypoint.api.infra.mercadopago.service.MercadoPagoGatewayService;
 import com.mercadopago.exceptions.MPApiException;

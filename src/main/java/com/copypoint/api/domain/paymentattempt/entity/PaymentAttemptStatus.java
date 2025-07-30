@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.paymentattempt;
+package com.copypoint.api.domain.paymentattempt.entity;
 
 public enum PaymentAttemptStatus {
     // Estados iniciales
