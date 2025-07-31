@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,9 @@ public interface CustomerServicePhoneRepository extends JpaRepository<CustomerSe
     // Y en CustomerServicePhoneRepository.java agregar:
     @Query("SELECT csp FROM CustomerServicePhone csp JOIN FETCH csp.messagingConfig WHERE csp.id = :id")
     Optional<CustomerServicePhone> findByIdWithMessagingConfig(@Param("id") Long id);
+
+    @Query("SELECT csp FROM CustomerServicePhone csp " +
+            "LEFT JOIN FETCH csp.messagingConfig " +
+            "WHERE csp.copypoint.id = :copypointId")
+    List<CustomerServicePhone> findByCopypointIdWithMessagingConfig(@Param("copypointId") Long copypointId);
 }
