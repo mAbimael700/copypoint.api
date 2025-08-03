@@ -13,11 +13,13 @@ public record PaymentResponse(
         SaleDTO sale,
         PaymentStatus status,
         LocalDateTime createdAt,
-        LocalDateTime modifiedAt
+        LocalDateTime modifiedAt,
+        String transactionId
 
 ) {
 
     public PaymentResponse(Payment payment) {
+
         this(
                 payment.getId(),
                 payment.getPaymentMethod().getDescription(),
@@ -25,7 +27,8 @@ public record PaymentResponse(
                 new SaleDTO(payment.getSale()),
                 payment.getStatus(),
                 payment.getCreatedAt(),
-                payment.getModifiedAt()
+                payment.getModifiedAt(),
+                payment.getGatewayId()
         );
     }
 }

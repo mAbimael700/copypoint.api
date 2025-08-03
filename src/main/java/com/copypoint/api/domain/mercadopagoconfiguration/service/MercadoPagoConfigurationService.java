@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.mercadopagoconfiguration.service;
 
+import com.copypoint.api.application.copypointintegration.exception.CopypointNotFoundException;
 import com.copypoint.api.domain.copypoint.Copypoint;
 import com.copypoint.api.domain.copypoint.repository.CopypointRepository;
 import com.copypoint.api.domain.mercadopagoconfiguration.MercadoPagoConfiguration;
@@ -10,9 +11,12 @@ import com.copypoint.api.infra.security.service.CredentialEncryptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,6 +40,19 @@ public class MercadoPagoConfigurationService {
     public Optional<MercadoPagoConfiguration> getConfigForSale(Sale sale) {
         Long copypointId = sale.getCopypoint().getId();
         return mercadoPagoConfigRepository.findActiveByCopypointId(copypointId);
+    }
+
+
+    public List<MercadoPagoConfiguration> getByCopypoint(Long copypointId){
+        Optional<Copypoint> copypointOpt = copypointRepository.findById(copypointId);
+
+        if (copypointOpt.isEmpty()){
+            throw new CopypointNotFoundException("Copypoint not found");
+        }
+
+        Copypoint copypoint = copypointOpt.get();
+
+        return copypoint.getMercadoPagoConfigurations();
     }
 
 

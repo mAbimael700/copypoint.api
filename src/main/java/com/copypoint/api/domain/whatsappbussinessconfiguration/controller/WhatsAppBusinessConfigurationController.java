@@ -4,6 +4,7 @@ import com.copypoint.api.domain.whatsappbussinessconfiguration.WhatsAppBusinessC
 import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppConfigurationDTO;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.dto.WhatsAppConfigurationResponseDTO;
 import com.copypoint.api.domain.whatsappbussinessconfiguration.service.WhatsAppBusinessConfigurationService;
+import com.copypoint.api.infra.security.utils.SecureTokenGenerator;
 import com.copypoint.api.infra.whatsappbusiness.util.WhatsAppWebhookTokenGenerator;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class WhatsAppBusinessConfigurationController {
     private WhatsAppBusinessConfigurationService configurationService;
 
     @Autowired
-    private WhatsAppWebhookTokenGenerator tokenGenerator;
+    private SecureTokenGenerator tokenGenerator;
 
     @PostMapping(value = "/phone/{phoneId}")
     public ResponseEntity<?> createConfiguration(
@@ -131,6 +132,6 @@ public class WhatsAppBusinessConfigurationController {
 
     @GetMapping("/generate-token")
     public ResponseEntity<String> getWebhookToken() {
-        return ResponseEntity.ok(tokenGenerator.generateVerifyToken());
+        return ResponseEntity.ok(tokenGenerator.generateWhatsAppVerifyToken());
     }
 }

@@ -35,7 +35,9 @@ public class MercadoPagoWebhookController {
             }
 
             // Validar signature con el webhook secret de la configuración
-            String webhookSecret = mercadoPagoConfigService.getWebhookSecretForSale(payment.getSale());
+            String webhookSecret = mercadoPagoConfigService
+                    .getWebhookSecretForSale(payment.getSale());
+
             if (!validateWebhookSignature(payload, signature, webhookSecret)) {
                 return ResponseEntity.badRequest().build();
             }
