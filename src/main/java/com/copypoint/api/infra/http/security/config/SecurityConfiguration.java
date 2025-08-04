@@ -56,8 +56,8 @@ public class SecurityConfiguration {
                                 .requestMatchers(HttpMethod.GET, "/api/payment-methods").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/webhook/whatsapp/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/webhook/whatsapp/*").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/webhook/mercadopago/*").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/webhook/mercadopago/*").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/webhook/mercadopago").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/webhook/mercadopago").permitAll()
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // Para CORS preflight
                                 .anyRequest().authenticated()
                 )
