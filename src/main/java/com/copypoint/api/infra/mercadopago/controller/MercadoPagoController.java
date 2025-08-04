@@ -94,61 +94,6 @@ public class MercadoPagoController {
     }
 
     /**
-     * Webhook para recibir notificaciones de MercadoPago
-     * @param payload Datos del webhook
-     * @return Confirmación de recepción
-     */
-    @PostMapping("/webhook")
-    public ResponseEntity<Map<String, String>> handleWebhook(@RequestBody Map<String, Object> payload) {
-        try {
-            // Extraer datos del payload de MercadoPago
-            String action = (String) payload.get("action");
-            String type = (String) payload.get("type");
-
-            // Procesar solo notificaciones de pago
-            if ("payment.updated".equals(action) || "payment".equals(type)) {
-                Map<String, Object> data = (Map<String, Object>) payload.get("data");
-                if (data != null && data.get("id") != null) {
-                    String paymentId = data.get("id").toString();
-
-                    // Obtener el estado del pago (esto podría requerir una consulta adicional a la API de MP)
-                    // Por ahora, pasamos null y el servicio hará la consulta
-                    mercadoPagoService.handleWebhook(paymentId, null);
-                }
-            }
-
-            return ResponseEntity.ok(Map.of("status", "received"));
-        } catch (Exception e) {
-            System.err.println("Error procesando webhook: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error procesando webhook"));
-        }
-    }
-
-    /**
-     * Endpoint alternativo para webhook con parámetros de consulta
-     * @param id ID del pago
-     * @param topic Tipo de notificación
-     * @return Confirmación de recepción
-     */
-    @PostMapping("/webhook/notification")
-    public ResponseEntity<Map<String, String>> handleWebhookNotification(
-            @RequestParam(required = false) String id,
-            @RequestParam(required = false) String topic) {
-        try {
-            if ("payment".equals(topic) && id != null) {
-                mercadoPagoService.handleWebhook(id, null);
-            }
-
-            return ResponseEntity.ok(Map.of("status", "received"));
-        } catch (Exception e) {
-            System.err.println("Error procesando webhook notification: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Error procesando webhook"));
-        }
-    }
-
-    /**
      * Endpoint para manejar redirecciones de éxito
      * @param paymentId ID del pago
      * @return Estado del pago

@@ -63,7 +63,7 @@ public class PaymentService {
         Optional<PaymentMethod> paymentMethodOpt = paymentMethodRepository.findByDescription(paymentMethod);
 
         if (paymentMethodOpt.isEmpty()) {
-            throw new IllegalArgumentException("Validación fallida: Payment method no encontrado" );
+            throw new IllegalArgumentException("Validación fallida: Payment method no encontrado");
         }
 
         // Crear el pago en la base de datos
@@ -78,6 +78,12 @@ public class PaymentService {
         return paymentRepository.save(payment);
     }
 
+    /**
+     * Método legacy actualizado para compatibilidad
+     *
+     * @deprecated Usar updatePaymentGatewayIntentId o updatePaymentGatewayPaymentId
+     */
+    @Deprecated
     public Payment updatePaymentGatewayId(Long paymentId, String gatewayId) {
         Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
         if (paymentOpt.isEmpty()) {
@@ -180,5 +186,90 @@ public class PaymentService {
 
     public Page<Payment> getPaymentsBySale(Long saleId, Pageable pageable) {
         return paymentRepository.findBySaleId(saleId, pageable);
+    }
+
+
+    /**
+     * Actualiza el payment con el Intent ID de la pasarela (checkout creado)
+     */
+    public Payment updatePaymentGatewayIntentId(Long paymentId, String gatewayIntentId) {
+        Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
+        if (paymentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Pago no encontrado");
+        }
+
+        Payment payment = paymentOpt.get();
+        payment.setGatewayIntentId(gatewayIntentId);
+        payment.setModifiedAt(LocalDateTime.now());
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * Actualiza el payment con el Payment ID de la pasarela (pago completado)
+     */
+    public Payment updatePaymentGatewayPaymentId(Long paymentId, String gatewayPaymentId) {
+        Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
+        if (paymentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Pago no encontrado");
+        }
+
+        Payment payment = paymentOpt.get();
+        payment.setGatewayPaymentId(gatewayPaymentId);
+        payment.setModifiedAt(LocalDateTime.now());
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * Actualiza el payment con el Transaction ID de la pasarela (ID bancario)
+     */
+    public Payment updatePaymentGatewayTransactionId(Long paymentId, String gatewayTransactionId) {
+        Optional<Payment> paymentOpt = paymentRepository.findById(paymentId);
+        if (paymentOpt.isEmpty()) {
+            throw new IllegalArgumentException("Pago no encontrado");
+        }
+
+        Payment payment = paymentOpt.get();
+        payment.setGatewayTransactionId(gatewayTransactionId);
+        payment.setModifiedAt(LocalDateTime.now());
+
+        return paymentRepository.save(payment);
+    }
+
+    /**
+     * Busca payment por Intent ID (agnóstico)
+     */
+    public Optional<Payment> findByGatewayIntentId(String gatewayIntentId) {
+        return paymentRepository.findByGatewayIntentId(gatewayIntentId);
+    }
+
+    /**
+     * Busca payment por Payment ID (agnóstico)
+     */
+    public Optional<Payment> findByGatewayPaymentId(String gatewayPaymentId) {
+        return paymentRepository.findByGatewayPaymentId(gatewayPaymentId);
+    }
+
+    /**
+     * Busca payment por Transaction ID (agnóstico)
+     */
+    public Optional<Payment> findByGatewayTransactionId(String gatewayTransactionId) {
+        return paymentRepository.findByGatewayTransactionId(gatewayTransactionId);
+    }
+
+    /**
+     * Busca payment por cualquier ID de pasarela (agnóstico)
+     * Útil para webhooks
+     */
+    public Optional<Payment> findByAnyGatewayId(String gatewayId) {
+        return paymentRepository.findByAnyGatewayId(gatewayId);
+    }
+
+    /**
+     * Obtiene payments por pasarela específica
+     */
+    public Page<Payment> getPaymentsByGateway(String gateway, Pageable pageable) {
+        return paymentRepository.findByGateway(gateway, pageable);
     }
 }

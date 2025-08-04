@@ -79,14 +79,17 @@ public class PaymentCreationOrchestrator {
     @Transactional
     private Payment updatePaymentWithPreferenceData(Payment payment, Preference preference) {
         try {
-            // Actualizar el payment con el ID de MercadoPago
-            Payment updatedPayment = paymentService.updatePaymentGatewayId(
+            // Actualizar el payment con el Intent ID (Preference ID en MercadoPago)
+            Payment updatedPayment = paymentService.updatePaymentGatewayIntentId(
                     payment.getId(),
                     preference.getId()
             );
 
             // Crear registro de intento de pago usando el servicio especializado
             paymentAttemptService.createMercadoPagoPreferenceAttempt(updatedPayment, preference);
+
+            logger.info("Payment {} actualizado con Gateway Intent ID (Preference): {}",
+                    updatedPayment.getId(), preference.getId());
 
             return updatedPayment;
 
@@ -122,12 +125,13 @@ public class PaymentCreationOrchestrator {
         }
     }
 
+    // También actualizar el método buildSuccessResponse si es necesario
     private PaymentGatewayResponse buildSuccessResponse(Preference preference, Payment payment) {
         return new PaymentGatewayResponse(
                 true,
                 "Pago creado exitosamente",
                 preference.getInitPoint(),
-                preference.getId(),
+                preference.getId(), // Este es el gatewayIntentId
                 payment.getId().toString(),
                 PaymentStatus.PENDING
         );
