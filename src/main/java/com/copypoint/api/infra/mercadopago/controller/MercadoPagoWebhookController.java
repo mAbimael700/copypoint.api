@@ -54,20 +54,25 @@ public class MercadoPagoWebhookController {
 
             Payment payment = null;
 
-            // Estrategia de búsqueda según el tipo de notificación
-            if ("payment".equals(topic)) {
-                logger.info("Procesando webhook de payment con ID: {}", dataId);
-                payment = handlePaymentWebhook(dataId);
+            switch (topic){
+                case "payment":
+                    logger.info("Procesando webhook de payment con ID: {}", dataId);
+                    payment = handlePaymentWebhook(dataId);
+                    break;
 
-            } else if ("merchant_order".equals(topic)) {
-                logger.info("Procesando webhook de merchant_order con ID: {}", dataId);
-                payment = handleMerchantOrderWebhook(dataId);
+                case "merchant_order":
+                case "merchant_order_wh":
+                case "topic_merchant_order_wh":
+                    logger.info("Procesando webhook de merchant_order con ID: {}", dataId);
+                    payment = handleMerchantOrderWebhook(dataId);
+                    break;
 
-            } else {
-                logger.warn("Tipo de webhook desconocido: {}, intentando búsqueda genérica", topic);
-                // Fallback: buscar por cualquier ID
-                Optional<Payment> paymentOpt = paymentService.findByAnyGatewayId(dataId);
-                payment = paymentOpt.orElse(null);
+                default:
+                    logger.warn("Tipo de webhook desconocido: {}, intentando búsqueda genérica", topic);
+                    // Fallback: buscar por cualquier ID
+                    Optional<Payment> paymentOpt = paymentService.findByAnyGatewayId(dataId);
+                    payment = paymentOpt.orElse(null);
+                    break;
             }
 
             if (payment == null) {
