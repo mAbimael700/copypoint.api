@@ -53,11 +53,14 @@ public class MercadoPagoWebhookController {
             }
 
             Payment payment = null;
+            String effectiveDataId = dataId; // ID que usaremos para procesar en MercadoPagoService
 
             switch (topic){
                 case "payment":
                     logger.info("Procesando webhook de payment con ID: {}", dataId);
                     payment = handlePaymentWebhook(dataId);
+                    // Para payments, usamos el dataId original
+                    effectiveDataId = dataId;
                     break;
 
                 case "merchant_order":
@@ -65,6 +68,11 @@ public class MercadoPagoWebhookController {
                 case "topic_merchant_order_wh":
                     logger.info("Procesando webhook de merchant_order con ID: {}", dataId);
                     payment = handleMerchantOrderWebhook(dataId);
+                    // Para merchant orders, necesitamos usar el payment ID del gateway, no el order ID
+                    if (payment != null && payment.hasGatewayPaymentId()) {
+                        effectiveDataId = payment.getGatewayPaymentId();
+                        logger.info("Usando Gateway Payment ID para procesar merchant_order: {}", effectiveDataId);
+                    }
                     break;
 
                 default:
@@ -97,14 +105,16 @@ public class MercadoPagoWebhookController {
                 logger.warn("No se recibió signature en el webhook");
             }
 
-            // Procesar webhook
-            boolean processed = mercadoPagoService.handleWebhook(dataId, topic, payload);
+            // Procesar webhook - usar effectiveDataId que puede ser diferente al dataId original
+            boolean processed = mercadoPagoService.handleWebhook(effectiveDataId, topic, payload);
 
             if (processed) {
-                logger.info("Webhook procesado exitosamente para payment: {}", payment.getId());
+                logger.info("Webhook procesado exitosamente para payment: {} con dataId: {}",
+                        payment.getId(), effectiveDataId);
                 return ResponseEntity.ok().build();
             } else {
-                logger.warn("No se pudo procesar el webhook para payment: {}", payment.getId());
+                logger.warn("No se pudo procesar el webhook para payment: {} con dataId: {}",
+                        payment.getId(), effectiveDataId);
                 return ResponseEntity.status(422).build(); // Unprocessable Entity
             }
 
@@ -173,7 +183,24 @@ public class MercadoPagoWebhookController {
             if (externalReference != null && !externalReference.trim().isEmpty()) {
                 Long internalPaymentId = Long.parseLong(externalReference);
                 Optional<Payment> paymentOpt = paymentService.findById(internalPaymentId);
-                return paymentOpt.orElse(null);
+
+                if (paymentOpt.isPresent()) {
+                    Payment payment = paymentOpt.get();
+
+                    // Si el payment no tiene gatewayPaymentId y el merchant order tiene payments asociados,
+                    // intentar obtenerlo de los payments del merchant order
+                    if (!payment.hasGatewayPaymentId() && merchantOrder.getPayments() != null && !merchantOrder.getPayments().isEmpty()) {
+                        String mpPaymentId = String.valueOf(merchantOrder.getPayments().get(0).getId());
+                        paymentService.updatePaymentGatewayPaymentId(payment.getId(), mpPaymentId);
+                        logger.info("Payment {} actualizado con Gateway Payment ID desde merchant order: {}",
+                                payment.getId(), mpPaymentId);
+
+                        // Recargar el payment con los datos actualizados
+                        payment = paymentService.findById(internalPaymentId).orElse(payment);
+                    }
+
+                    return payment;
+                }
             }
 
             return null;
