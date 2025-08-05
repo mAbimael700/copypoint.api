@@ -1,7 +1,7 @@
 package com.copypoint.api.infra.mercadopago.controller;
 
 import com.copypoint.api.domain.mercadopagoconfiguration.service.MercadoPagoConfigurationService;
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
 import com.copypoint.api.domain.payment.service.PaymentService;
 import com.copypoint.api.infra.mercadopago.service.MercadoPagoService;
 import com.fasterxml.jackson.databind.JsonNode;

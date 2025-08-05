@@ -1,7 +1,7 @@
 package com.copypoint.api.infra.mercadopago.service;
 
-import com.copypoint.api.domain.payment.Payment;
-import com.copypoint.api.domain.payment.PaymentStatus;
+import com.copypoint.api.domain.payment.entity.Payment;
+import com.copypoint.api.domain.payment.entity.PaymentStatus;
 import com.copypoint.api.domain.payment.dto.PaymentRequest;
 import com.copypoint.api.domain.payment.dto.PaymentGatewayResponse;
 import com.copypoint.api.domain.payment.dto.PaymentStatusResponse;

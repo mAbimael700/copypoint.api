@@ -1,6 +1,7 @@
 package com.copypoint.api.domain.payment.repository;
 
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
+import com.copypoint.api.domain.payment.entity.PaymentStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -81,6 +82,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
           AND p.status = :status
         """)
     List<Payment> findByGatewayAndStatus(@Param("gateway") String gateway,
-                                         @Param("status") com.copypoint.api.domain.payment.PaymentStatus status);
+                                         @Param("status") PaymentStatus status);
 
 }

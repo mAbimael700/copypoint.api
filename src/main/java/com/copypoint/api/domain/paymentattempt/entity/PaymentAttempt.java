@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.paymentattempt.entity;
 
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

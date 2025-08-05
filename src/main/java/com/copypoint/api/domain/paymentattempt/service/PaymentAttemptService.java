@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.paymentattempt.service;
 
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
 import com.copypoint.api.domain.paymentattempt.entity.PaymentAttempt;
 import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;

@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.mercadopago.service;
 
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
 import com.copypoint.api.domain.payment.service.PaymentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

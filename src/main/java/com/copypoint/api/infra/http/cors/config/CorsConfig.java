@@ -1,5 +1,6 @@
 package com.copypoint.api.infra.http.cors.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
@@ -11,6 +12,9 @@ import java.util.Arrays;
 @Configuration
 public class CorsConfig {
 
+    @Value("app.development.dev.address")
+    private String devIP;
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -18,7 +22,8 @@ public class CorsConfig {
         // Orígenes permitidos (URLs de tu frontend)
         configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:3000",
-                "https://app.copypoint.shop"    // Producción
+                "https://app.copypoint.shop",    // Producción
+                devIP
         ));
 
         // Métodos HTTP permitidos

@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.payment;
+package com.copypoint.api.domain.payment.entity;
 
 public enum PaymentStatus {
     PENDING,             // Pago pendiente/iniciado

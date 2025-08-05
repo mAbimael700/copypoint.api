@@ -1,6 +1,6 @@
 package com.copypoint.api.domain.payment.dto;
 
-import com.copypoint.api.domain.payment.PaymentStatus;
+import com.copypoint.api.domain.payment.entity.PaymentStatus;
 
 public record PaymentStatusResponse(
         String paymentId,

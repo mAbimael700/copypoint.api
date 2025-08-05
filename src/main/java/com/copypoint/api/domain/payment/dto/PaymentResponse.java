@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.payment.dto;
 
-import com.copypoint.api.domain.payment.Payment;
-import com.copypoint.api.domain.payment.PaymentStatus;
+import com.copypoint.api.domain.payment.entity.Payment;
+import com.copypoint.api.domain.payment.entity.PaymentStatus;
 import com.copypoint.api.domain.sale.dto.SaleDTO;
 
 import java.time.LocalDateTime;

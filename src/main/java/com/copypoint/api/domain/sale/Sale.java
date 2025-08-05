@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.sale;
 
 import com.copypoint.api.domain.copypoint.Copypoint;
-import com.copypoint.api.domain.payment.Payment;
+import com.copypoint.api.domain.payment.entity.Payment;
 import com.copypoint.api.domain.paymentmethod.PaymentMethod;
 import com.copypoint.api.domain.saleprofile.SaleProfile;
 import com.copypoint.api.domain.user.User;

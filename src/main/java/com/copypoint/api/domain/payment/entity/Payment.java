@@ -1,4 +1,4 @@
-package com.copypoint.api.domain.payment;
+package com.copypoint.api.domain.payment.entity;
 
 import com.copypoint.api.domain.paymentmethod.PaymentMethod;
 import com.copypoint.api.domain.sale.Sale;
