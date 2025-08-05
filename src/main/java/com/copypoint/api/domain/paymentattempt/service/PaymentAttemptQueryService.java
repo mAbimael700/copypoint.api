@@ -61,17 +61,21 @@ public class PaymentAttemptQueryService {
      */
     public Optional<CheckoutData> getLatestCheckoutData(Long paymentId) {
         try {
-            PaymentAttempt latestAttempt = paymentAttemptRepository.findLatestByPaymentId(paymentId);
+            List<PaymentAttempt> attempts = paymentAttemptRepository
+                    .findByPaymentReferenceIdOrderByCreatedAtDesc(paymentId);
 
-            if (latestAttempt == null) {
-                logger.info("No se encontró ningún intento para Payment ID: {}", paymentId);
-                return Optional.empty();
+            // Buscar el primer intento que sea parseable
+            for (PaymentAttempt attempt : attempts) {
+                Optional<CheckoutData> checkoutData = parserService.parseGatewayResponse(attempt);
+                if (checkoutData.isPresent()) {
+                    logger.debug("Checkout data encontrado en intento: {} para Payment ID: {}",
+                            attempt.getId(), paymentId);
+                    return checkoutData;
+                }
             }
 
-            logger.debug("Último intento encontrado con estado: {} para Payment ID: {}",
-                    latestAttempt.getStatus(), paymentId);
-
-            return parserService.parseGatewayResponse(latestAttempt);
+            logger.info("No se encontró checkout data parseable para Payment ID: {}", paymentId);
+            return Optional.empty();
 
         } catch (Exception e) {
             logger.error("Error obteniendo último checkout data para Payment ID: {}", paymentId, e);
