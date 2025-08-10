@@ -2,7 +2,7 @@ name: Deploy to Coolify
 
 on:
   push:
-    branches: [main]  # o la rama que uses para producción
+    branches: [main]  # Cambia si usas otra rama para producción
 
 jobs:
   build-and-deploy:
@@ -21,11 +21,10 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
-      - name: Upload to Coolify (usando Docker)
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.COOLIFY_HOST }}
-          username: ${{ secrets.COOLIFY_USER }}
-          key: ${{ secrets.COOLIFY_SSH_KEY }}
-          source: "target/*.jar"
-          target: "/home/user/myapp"
+      - name: Trigger redeploy in Coolify
+        run: |
+          echo "Redeploying service in Coolify..."
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_KEY }}" \
+            -H "Content-Type: application/json" \
+            http://${{ secrets.COOLIFY_HOST }}/api/v1/services/${{ secrets.COOLIFY_SERVICE_UUID }}/redeploy
