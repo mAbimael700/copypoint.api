@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.conversation.dto;
 
+import com.copypoint.api.domain.contact.dto.ContactResponse;
 import com.copypoint.api.domain.conversation.Conversation;
 
 import java.time.LocalDateTime;
@@ -9,7 +10,9 @@ public record ConversationResponse(
         LocalDateTime createdAt,
         Long phoneId,
         String phoneNumber,
-        String displayName
+        String displayName,
+        ContactResponse contact,
+        Long customerServicePhoneId
 ) {
 
     public ConversationResponse(Conversation conversation) {
@@ -18,8 +21,9 @@ public record ConversationResponse(
                 conversation.getCreatedAt(),
                 conversation.getCustomerServicePhone().getId(),
                 conversation.getCustomerServicePhone().getPhoneNumber(),
-                conversation.getCustomerServicePhone().getMessagingConfig().getDisplayName()
-
+                conversation.getCustomerServicePhone().getMessagingConfig().getDisplayName(),
+                new ContactResponse(conversation.getCustomerContact()),
+                conversation.getCustomerServicePhone().getId()
         );
     }
 }

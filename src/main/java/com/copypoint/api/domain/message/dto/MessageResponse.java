@@ -5,28 +5,29 @@ import com.copypoint.api.domain.message.Message;
 import com.copypoint.api.domain.message.MessageDirection;
 import com.copypoint.api.domain.message.MessageStatus;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record MessageResponse(
         Long id,
-        String messageSiD,
         MessageDirection direction,
         MessageStatus status,
         String body,
         Long conversationId,
-        List<AttachmentResponse> attachments
+        List<AttachmentResponse> attachments,
+        LocalDateTime timestamp
 ) {
 
     public MessageResponse(Message message) {
         this(
                 message.getId(),
-                message.getMessageSid(),
                 message.getDirection(),
                 message.getStatus(),
                 message.getBody(),
                 message.getConversation().getId(),
                 message.getAttachments().stream()
-                        .map(AttachmentResponse::new).toList()
+                        .map(AttachmentResponse::new).toList(),
+                message.getDateCreated()
         );
     }
 }
