@@ -5,6 +5,7 @@ import com.copypoint.api.domain.attachment.dto.AttachmentAvailabilityResponse;
 import com.copypoint.api.domain.attachment.dto.AttachmentResponse;
 import com.copypoint.api.domain.attachment.dto.PresignedUrlResponse;
 import com.copypoint.api.domain.attachment.service.AttachmentMediaService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +14,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/attachments")
 public class AttachmentController {
+
+    @Autowired
     private AttachmentMediaService attachmentService;
 
     /**
