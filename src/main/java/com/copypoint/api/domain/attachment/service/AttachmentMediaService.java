@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+
 public class AttachmentMediaService {
 
     @Autowired
     private AttachmentRepository attachmentRepository;
 
+    @Autowired
     private CloudflareR2Service cloudflareR2Service;
 
     /**
