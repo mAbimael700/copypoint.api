@@ -86,7 +86,8 @@ public class DashboardAnalyticsService {
 
         List<PaymentStatusData> statusDistribution = results.stream()
                 .map(row -> {
-                    String status = ((PaymentStatus) row[0]).name();
+                    String statusStr = (String) row[0];
+                    String status = PaymentStatus.valueOf(statusStr).name();
                     Integer count = ((Number) row[1]).intValue();
                     Double percentage = (count.doubleValue() / totalPayments) * 100;
                     return new PaymentStatusData(status, count, percentage);
