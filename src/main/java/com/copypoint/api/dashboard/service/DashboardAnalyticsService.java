@@ -8,6 +8,7 @@ import com.copypoint.api.domain.paymentattempt.entity.PaymentAttemptStatus;
 import com.copypoint.api.domain.paymentattempt.repository.PaymentAttemptRepository;
 import com.copypoint.api.domain.sale.repository.SaleRepository;
 import com.copypoint.api.domain.saleprofile.repository.SaleProfileRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,9 +19,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class DashboardAnalyticsService {
+
+    @Autowired
     private SaleRepository saleRepository;
+
+    @Autowired
     private PaymentRepository paymentRepository;
+
+    @Autowired
     private  PaymentAttemptRepository paymentAttemptRepository;
+
+    @Autowired
     private SaleProfileRepository saleProfileRepository;
 
     // Dashboard de Ventas Generales
