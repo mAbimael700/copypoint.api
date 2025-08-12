@@ -26,7 +26,8 @@ public record SaleProfileDTO(
                 saleProfile.getUnitPrice(),
                 saleProfile.getQuantity(),
                 saleProfile.getSubtotal(),
-                new AttachmentResponse(saleProfile.getAttachment())
+                saleProfile.getAttachment() != null ?
+                        new AttachmentResponse(saleProfile.getAttachment()) : null
         );
     }
 }
