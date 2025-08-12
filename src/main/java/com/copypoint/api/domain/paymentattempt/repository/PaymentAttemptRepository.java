@@ -85,4 +85,15 @@ public interface PaymentAttemptRepository extends JpaRepository<PaymentAttempt, 
      */
     @Query("SELECT pa FROM PaymentAttempt pa WHERE pa.paymentReference.id = :paymentId ORDER BY pa.createdAt DESC LIMIT 1")
     Optional<PaymentAttempt> findTopByPaymentReferenceIdOrderByCreatedAtDesc(@Param("paymentId") Long paymentId);
+
+    @Query(value = """
+        SELECT pa.status,
+               COUNT(pa.id) as attempt_count
+        FROM payment_attempts pa 
+        WHERE pa.created_at BETWEEN :startDate AND :endDate
+        GROUP BY pa.status
+        ORDER BY attempt_count DESC
+        """, nativeQuery = true)
+    List<Object[]> findAttemptsByStatus(@Param("startDate") LocalDateTime startDate,
+                                        @Param("endDate") LocalDateTime endDate);
 }

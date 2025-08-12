@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,5 +84,46 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
         """)
     List<Payment> findByGatewayAndStatus(@Param("gateway") String gateway,
                                          @Param("status") PaymentStatus status);
+
+    @Query(value = """
+        SELECT p.status,
+               COUNT(p.id) as payment_count
+        FROM payments p 
+        INNER JOIN sales s ON p.sale_id = s.id
+        WHERE s.created_at BETWEEN :startDate AND :endDate
+        GROUP BY p.status
+        ORDER BY payment_count DESC
+        """, nativeQuery = true)
+    List<Object[]> findPaymentStatusDistribution(@Param("startDate") LocalDateTime startDate,
+                                                 @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = """
+        SELECT pm.description as method_description,
+               pm.gateway,
+               COALESCE(SUM(p.amount), 0) as total_revenue,
+               COUNT(p.id) as transaction_count
+        FROM payment_methods pm 
+        LEFT JOIN payments p ON pm.id = p.payment_method_id
+        LEFT JOIN sales s ON p.sale_id = s.id
+        WHERE s.created_at BETWEEN :startDate AND :endDate
+        GROUP BY pm.id, pm.description, pm.gateway
+        ORDER BY total_revenue DESC
+        """, nativeQuery = true)
+    List<Object[]> findRevenueByPaymentMethod(@Param("startDate") LocalDateTime startDate,
+                                              @Param("endDate") LocalDateTime endDate);
+
+    @Query(value = """
+        SELECT pm.description as method_description,
+               COUNT(p.id) as usage_count
+        FROM payment_methods pm 
+        LEFT JOIN payments p ON pm.id = p.payment_method_id
+        LEFT JOIN sales s ON p.sale_id = s.id
+        WHERE s.created_at BETWEEN :startDate AND :endDate
+        GROUP BY pm.id, pm.description
+        ORDER BY usage_count DESC
+        """, nativeQuery = true)
+    List<Object[]> findPaymentMethodUsage(@Param("startDate") LocalDateTime startDate,
+                                          @Param("endDate") LocalDateTime endDate);
+
 
 }

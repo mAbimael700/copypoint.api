@@ -82,7 +82,6 @@ public class Payment {
     private LocalDateTime modifiedAt;
 
 
-
     // Métodos de conveniencia
     /**
      * Retorna el ID más relevante según el estado del pago
