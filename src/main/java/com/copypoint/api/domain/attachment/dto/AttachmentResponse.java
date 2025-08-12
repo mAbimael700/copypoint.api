@@ -16,8 +16,8 @@ public record AttachmentResponse(
         AttachmentDownloadStatus downloadStatus,
         Boolean isAvailable,
         LocalDateTime dateCreated,
-        LocalDateTime dateDownloaded
-
+        LocalDateTime dateDownloaded,
+        Integer pages
 ) {
 
     public AttachmentResponse(Attachment attachment) {
@@ -31,7 +31,8 @@ public record AttachmentResponse(
                 attachment.getDownloadStatus(),
                 attachment.isDownloaded(),
                 attachment.getDateCreated(),
-                attachment.getDateUpdated()
+                attachment.getDateUpdated(),
+                attachment.getPages()
         );
     }
 }

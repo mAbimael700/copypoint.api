@@ -4,7 +4,7 @@ import com.copypoint.api.domain.copypoint.Copypoint;
 import com.copypoint.api.domain.copypoint.repository.CopypointRepository;
 import com.copypoint.api.domain.paymentmethod.PaymentMethod;
 import com.copypoint.api.domain.paymentmethod.repository.PaymentMethodRepository;
-import com.copypoint.api.domain.profile.ProfileRepository;
+import com.copypoint.api.domain.profile.repository.ProfileRepository;
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.sale.SaleStatus;
 import com.copypoint.api.domain.sale.repository.SaleRepository;

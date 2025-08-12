@@ -1,6 +1,6 @@
 package com.copypoint.api.infra.http.controller;
 
-import com.copypoint.api.domain.profile.ProfileService;
+import com.copypoint.api.domain.profile.service.ProfileService;
 import com.copypoint.api.domain.profile.dto.ProfileCreationDTO;
 import com.copypoint.api.domain.profile.dto.ProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;

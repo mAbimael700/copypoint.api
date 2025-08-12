@@ -1,5 +1,6 @@
 package com.copypoint.api.domain.saleprofile.dto;
 
+import com.copypoint.api.domain.attachment.dto.AttachmentResponse;
 import com.copypoint.api.domain.saleprofile.SaleProfile;
 
 public record SaleProfileDTO(
@@ -10,7 +11,8 @@ public record SaleProfileDTO(
         String description,
         Double unitPrice,
         Integer quantity,
-        Double subtotal
+        Double subtotal,
+        AttachmentResponse attachment
 
 ) {
 
@@ -23,7 +25,8 @@ public record SaleProfileDTO(
                 saleProfile.getProfile().getDescription(),
                 saleProfile.getUnitPrice(),
                 saleProfile.getQuantity(),
-                saleProfile.getSubtotal()
+                saleProfile.getSubtotal(),
+                new AttachmentResponse(saleProfile.getAttachment())
         );
     }
 }

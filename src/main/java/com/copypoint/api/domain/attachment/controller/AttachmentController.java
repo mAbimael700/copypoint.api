@@ -40,19 +40,7 @@ public class AttachmentController {
 
         Attachment attachment = attachmentOpt.get();
 
-        AttachmentResponse response = new AttachmentResponse(
-                attachment.getId(),
-                attachment.getOriginalName(),
-                attachment.getFileType(),
-                attachment.getMessage().getId(),
-                attachment.getMimeType(),
-                attachment.getFileSizeBytes(),
-                attachment.getDownloadStatus(),
-                attachmentService.isAttachmentAvailable(id),
-                attachment.getDateCreated(),
-                attachment.getDateDownloaded()
-        );
-
+        AttachmentResponse response = new AttachmentResponse(attachment);
 
         return ResponseEntity.ok(response);
     }

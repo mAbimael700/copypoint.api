@@ -1,7 +1,7 @@
 package com.copypoint.api.domain.saleprofile.service;
 
 import com.copypoint.api.domain.profile.Profile;
-import com.copypoint.api.domain.profile.ProfileRepository;
+import com.copypoint.api.domain.profile.repository.ProfileRepository;
 import com.copypoint.api.domain.sale.Sale;
 import com.copypoint.api.domain.sale.SaleStatus;
 import com.copypoint.api.domain.sale.dto.SaleDTO;
@@ -22,14 +22,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 @Slf4j
 @Service

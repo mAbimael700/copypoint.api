@@ -1,7 +1,9 @@
-package com.copypoint.api.domain.profile;
+package com.copypoint.api.domain.profile.service;
 
+import com.copypoint.api.domain.profile.Profile;
 import com.copypoint.api.domain.profile.dto.ProfileCreationDTO;
 import com.copypoint.api.domain.profile.dto.ProfileDTO;
+import com.copypoint.api.domain.profile.repository.ProfileRepository;
 import com.copypoint.api.domain.service.repository.ServiceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
